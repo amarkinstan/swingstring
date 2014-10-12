@@ -25,16 +25,16 @@ public class RopeControl : MonoBehaviour
 	
 		//Internal variables
 	
-		//The position of the first achored attachd to an object
+		//The position of the first anchored attached to an object
 		private Vector3 anchorPoint;
 	
 		//The object that is going to appear when the rope begins (makes the rope appear smooth)
 		private GameObject anchorBendObject;
 	
-		//Is the player attached to a rope?
+		//Is the player attached to a rope??
 		private bool attatched = false;
 	
-		//The series of Ropes th eplayer 
+		//The series of Ropes attached to the player 
 		private List<Rope> Ropes;
 	
 		//The angle between the first(active) rope and the normal left vector from last frame
@@ -47,18 +47,33 @@ public class RopeControl : MonoBehaviour
 		private float deltaAngle;
 	
 	
-		//The Rope Sgement
+		//The Rope Segment
 		public class Rope : Object
 		{
-		
+				//the component that creates the rope line
 				public LineRenderer line;
+				
+				//The Object in the world that the line renderer sit inside
 				public GameObject hasLine;
+				
+				//The Object that will contain the dot model that makes the ropes appear to have rounded ends
 				public GameObject hasBend;
+				
+				//anchor position of rope
 				public Vector3 anchor;
+				
+				//position other end of the rope
 				public Vector3 end;
+				
+				//The physics component that actually does the swinging
 				public ConfigurableJoint ropeJoint;
+				
+				//The property box that contains information about the Joint
 				public SoftJointLimit jointLimit;
+				
+				//Which direction the Rope is going in
 				public bool isAntiClockwise;
+				
 		
 				//Make New Rope
 				public Rope (Vector3 anchor, Vector3 end, GameObject bend)
@@ -69,6 +84,7 @@ public class RopeControl : MonoBehaviour
 						this.hasBend.renderer.enabled = false;
 						this.hasLine = new GameObject ();
 						this.line = this.hasLine.AddComponent<LineRenderer> ();
+						//Visual size of Rope - should be param
 						this.line.SetWidth (0.1f, 0.1f);
 						this.line.SetVertexCount (2);
 						this.line.material.color = Color.black;
@@ -82,7 +98,7 @@ public class RopeControl : MonoBehaviour
 						this.ropeJoint.linearLimit = this.jointLimit;
 				}
 		
-				//Configure a rope's physics
+				//Configure a rope's physics - could be added to constructor(?)
 				public void setUpRope (GameObject addTo, float length, float spring, float damper)
 				{
 						this.ropeJoint = addTo.AddComponent<ConfigurableJoint> ();
@@ -112,33 +128,40 @@ public class RopeControl : MonoBehaviour
 				}
 		}
 	
+		//Joins two ropes into one when no longer wrapping around something
 		void RopeJoin (List<Rope> toJoin)
 		{
+				//make sure the length of the new rope is correct
 				float oldLength1 = Vector3.Distance (toJoin [1].end, toJoin [1].anchor);
 				float oldLength2 = toJoin [0].jointLimit.limit;
+				//Clean up Objects
 				DestroyObject (toJoin [0].hasLine);
-				//Component.Destroy (player.GetComponent<ConfigurableJoint> ());
 				KillJoints ();
 				DestroyObject (toJoin [0].hasBend);
+				//Delete Rope
 				toJoin.RemoveAt (0);
+				//Correct the position/length of remaining rope
 				toJoin [0].end = player.transform.position;
 				toJoin [0].setUpRope (player, oldLength1 + oldLength2, spring, damper);
-		
+				//Move bend object to appear round
 				toJoin [0].hasBend.transform.position = toJoin [0].anchor;
 		
 		}
 	
+		//Splits a single rope into two when wrapping around an object
 		void RopeSplit (List<Rope> toSplit, Vector3 splitPoint)
 		{
 				toSplit [0].end = splitPoint;
 				toSplit [0].hasBend.renderer.enabled = true;
 				toSplit [0].hasBend.transform.position = splitPoint;
-				//add to beginning
+				//add to beginning of list of ropes - Shoudl use a Stack
 				toSplit.Insert (0, new Rope (splitPoint, player.transform.position, ropeBend));
-				//Component.Destroy (player.GetComponent<ConfigurableJoint> ());
+				//clean up
 				KillJoints ();
+				//setup new Rope
 				toSplit [0].setUpRope (player, Vector3.Distance (player.transform.position, splitPoint), spring, damper);
 				toSplit [0].hasBend.transform.position = splitPoint;
+				//check direction of new rope
 				if (deltaAngle > 0f) {
 						toSplit [0].isAntiClockwise = true;
 				} else {
@@ -148,6 +171,7 @@ public class RopeControl : MonoBehaviour
 		
 		}
 	
+		//Remove all of the physics joint components that are attached to the player
 		void KillJoints ()
 		{
 		
@@ -161,6 +185,9 @@ public class RopeControl : MonoBehaviour
 		
 		}
 	
+		//Given a point in world space and an object, get the closest vertex of that object, then find a point wireSize away from that.
+		//Assumes Object is a cube
+		//TODO use any object
 		Vector3 FindCorner (Vector3 hitSpot, Transform hitCube, float wireSize)
 		{
 		
@@ -169,8 +196,7 @@ public class RopeControl : MonoBehaviour
 				float width;
 				List<Vector3> corners = new List<Vector3> ();
 		
-				//centrePos = hitCube.position;
-				
+								
 				centrePos = Vector3.zero;
 				height = hitCube.localScale.y;
 				width = hitCube.localScale.x;
@@ -188,9 +214,10 @@ public class RopeControl : MonoBehaviour
 				corners.Add (new Vector3 (centrePos.x + 0.5f, centrePos.y - 0.5f, 0f));
 				//topleft
 				corners.Add (new Vector3 (centrePos.x - 0.5f, centrePos.y - 0.5f, 0f));
-		
+				//closest corner
 				corners = corners.OrderBy (vec3 => Vector3.Distance (vec3, hitCube.InverseTransformPoint (hitSpot))).ToList ();
-		
+				
+				// move away by wireSize
 				Vector3 diagDir = Vector3.Normalize (new Vector3 (corners [0].x, 0f, 0f)) + Vector3.Normalize (new Vector3 (0f, corners [0].y, 0f));
 		
 				Vector3.Normalize (diagDir);
@@ -201,6 +228,7 @@ public class RopeControl : MonoBehaviour
 		
 		}
 	
+		//have we retracted very close to the anchor point?
 		bool isRetracted (List<Rope> toCheck)
 		{
 		
@@ -213,37 +241,31 @@ public class RopeControl : MonoBehaviour
 		}
 	
 	
-	
+		//Do owe need to join the ropes? (Unwrap around object)
 		bool isJoined (List<Rope> toCheck)
 		{
 		
 				if (attatched) {
 			
 						float distance = Vector3.Distance (toCheck [0].anchor, player.transform.position);
-			
-			
+						
 						if (toCheck.Count > 1 && distance > 0.3f) {
-				
-				
+								
 								float angle = AngleSigned (toCheck [1].end - toCheck [1].anchor, toCheck [0].anchor - player.transform.position, Vector3.back);
-				
-				
+								
 								if ((angle < 0f && toCheck [0].isAntiClockwise == true) || (angle > 0f && toCheck [0].isAntiClockwise == false)) {
-					
-					
+										
 										return true;
 					
 								} else {
 										return false;
-								}
-				
-				
+								}							
 						}
 				}
 				return false;
-		
 		}
 	
+		//Do we need to split ropes? (Wrap around object)
 		bool isSplit (List<Rope> toCheck)
 		{
 		
@@ -271,6 +293,7 @@ public class RopeControl : MonoBehaviour
 		
 		}
 	
+		//Get the true angle between two lines, can return negatives
 		float AngleSigned (Vector3 v1, Vector3 v2, Vector3 n)
 		{
 				return Mathf.Atan2 (
@@ -282,8 +305,7 @@ public class RopeControl : MonoBehaviour
 		//Visuals
 		void LateUpdate ()
 		{
-		
-		
+				
 				if (attatched) {
 						Ropes [0].end = player.transform.position;
 				}
@@ -297,10 +319,9 @@ public class RopeControl : MonoBehaviour
 						lastAngle = AngleSigned (player.transform.position - Ropes [0].anchor, Vector3.left, Vector3.back);
 				}
 		
-		
 		}
 	
-		//Run every frame Physics Operations
+		//Do Checks for wrapping/unwrapping
 		void FixedUpdate ()
 		{
 		
@@ -316,6 +337,7 @@ public class RopeControl : MonoBehaviour
 				}
 		}
 	
+		//Is the position we just clicked a good spot  to put an anchor?
 		bool isAnchored ()
 		{
 				Vector3 clickVector;
@@ -338,15 +360,18 @@ public class RopeControl : MonoBehaviour
 						return false;
 				}
 		}
+		
 		// Controls
 		void Update ()
 		{
+				//Get deltaAngle each frame
 				if (attatched) {
 						currentAngle = AngleSigned (player.transform.position - Ropes [0].anchor, Vector3.left, Vector3.back);
 						deltaAngle = currentAngle - lastAngle;
 						//print (deltaAngle);
 			
 				}
+				//Make the rope with left click
 				if ((Input.GetButtonDown ("Attach + Pull")) == true && attatched == false) {
 						if (isAnchored ()) {
 								Ropes = new List<Rope> ();
@@ -358,10 +383,12 @@ public class RopeControl : MonoBehaviour
 								attatched = true;
 						}
 				}
+				//Retract Rope
 				if ((Input.GetButton ("Attach + Pull")) == true && attatched == true) {
 						//Retract the first rope
 						Ropes [0].Retract (retractSpeed * Time.deltaTime);
 				}
+				//Detach
 				if ((Input.GetButtonDown ("Dettach") == true) && attatched == true) {
 						//delete all ropeJoints
 						attatched = false;
