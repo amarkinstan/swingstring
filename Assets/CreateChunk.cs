@@ -3,14 +3,16 @@ using System.Collections;
 
 public class CreateChunk : MonoBehaviour
 {
-
+		
 		public Transform prefab;
+		
 		public bool isGaussian;
 		public int numberOfObjects;
 		public Vector3 minSize, maxSize;
 		public Vector2 fieldSize;
 		public Color shade;
 		private int count = 0;
+		private float seed;
 
 		Transform o;
 
@@ -22,13 +24,18 @@ public class CreateChunk : MonoBehaviour
 		
 		IEnumerator MakeBlocks ()
 		{
-
+				seed = GlobalStuff.Seed;
+				print (transform.position);
+				Random.seed = (int)(Mathf.PerlinNoise (transform.position.x + 0.01f, transform.position.y + 0.01f) * 1000 + seed);
+				print ((int)(Mathf.PerlinNoise (transform.position.x + 0.01f, transform.position.y + 0.01f) * 1000 + seed));
+				
 				for (int i = 1; i < numberOfObjects; i++) {
 						Vector3 scale = new Vector3 (
 				Random.Range (minSize.x, maxSize.x),
 				Random.Range (minSize.y, maxSize.y),
 				Random.Range (minSize.z, maxSize.z));
 						Vector3 position;
+						
 						if (isGaussian) {
 								position = new Vector3 (fieldSize.x * Gaussian (), fieldSize.y * Gaussian (), 0f);
 						} else {

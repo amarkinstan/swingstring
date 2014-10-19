@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 using System.Collections.Generic;
 
@@ -8,6 +9,7 @@ public class ChunkManager : MonoBehaviour
 
 		public GameObject basicField;
 		public GameObject Player;
+		public float maxDistance;
 		
 		private Dictionary<string, Chunk> allChunks = new Dictionary<string, Chunk> ();
 		
@@ -35,7 +37,7 @@ public class ChunkManager : MonoBehaviour
 				int xIndex;
 				int yIndex;
 				GameObject fieldType;
-				GameObject field;
+				public GameObject field;
 				Object save;
 	
 				public Chunk (int xCoord, int yCoord, GameObject type)
@@ -64,15 +66,15 @@ public class ChunkManager : MonoBehaviour
 		static int WorldToIndex (float world)
 		{
 			
-//				float top = Mathf.Ceil (world / 200f);
-//				float bottom = Mathf.Floor (world / 200f);
-//				
-//				if ((Mathf.Repeat (world, 200f) + world / 200f) - top <= (Mathf.Repeat (world, 200f) + world / 200f) - bottom) {
-//						return (int)top;
-//				} else {
-//						return (int)bottom;
-//				}
-				return (int)(world / 100f);
+				float top = Mathf.Ceil (world / 100f);
+				float bottom = Mathf.Floor (world / 100f);
+				
+				if (Mathf.Repeat (world, 100f) > 50f) {
+						return (int)top;
+				} else {
+						return (int)bottom;
+				}
+				//return (int)(world / 100f);
 		}
 	
 		
@@ -89,11 +91,23 @@ public class ChunkManager : MonoBehaviour
 								if (allChunks.ContainsKey (tempX + "," + tempY) == false) {
 				
 										allChunks.Add (tempX + "," + tempY, new Chunk (currentX + q, currentY + p, basicField));
-										print (allChunks [tempX + "," + tempY]);
+										
 				
 								}
 						}
 				}
+				List<string> list = allChunks.Select (x => x.Key).ToList ();
+			
+				foreach (string entry in list) {
+						if (Vector3.Distance (Player.transform.position, allChunks [entry].field.transform.position) > maxDistance) {
+			
+								Object.Destroy (allChunks [entry].field);
+								allChunks.Remove (entry);
+			
+						}
+				}
+				
+				
 		
 		
 		}
