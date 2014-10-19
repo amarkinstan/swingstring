@@ -1,8 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\RopeControl.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\ChunkDelete.cs">
     <Files>
-      <File FileName="Assets\RopeControl.cs" Line="45" Column="2" />
+      <File FileName="Assets\ChunkDelete.cs" Line="8" Column="28" />
+      <File FileName="Assets\RopeControl.cs" Line="3" Column="1" />
+      <File FileName="Assets\CreateChunk.cs" Line="33" Column="18" />
+      <File FileName="Assets\ChunkManager.cs" Line="87" Column="51" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

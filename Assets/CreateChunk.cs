@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CreateField : MonoBehaviour
+public class CreateChunk : MonoBehaviour
 {
 
 		public Transform prefab;
+		public bool isGaussian;
 		public int numberOfObjects;
 		public Vector3 minSize, maxSize;
 		public Vector2 fieldSize;
@@ -16,6 +17,11 @@ public class CreateField : MonoBehaviour
 		// Use this for initialization
 		void Start ()
 		{
+				StartCoroutine ("MakeBlocks");
+		}
+		
+		IEnumerator MakeBlocks ()
+		{
 
 				for (int i = 1; i < numberOfObjects; i++) {
 						Vector3 scale = new Vector3 (
@@ -23,15 +29,22 @@ public class CreateField : MonoBehaviour
 				Random.Range (minSize.y, maxSize.y),
 				Random.Range (minSize.z, maxSize.z));
 						Vector3 position;
-						position = new Vector3 (fieldSize.x * Gaussian (), fieldSize.y * Gaussian (), 0f);
+						if (isGaussian) {
+								position = new Vector3 (fieldSize.x * Gaussian (), fieldSize.y * Gaussian (), 0f);
+						} else {
+								position = new Vector3 (fieldSize.x * Random.Range (-1f, 1f), fieldSize.y * Random.Range (-1f, 1f), 0f);
+						}
+						position = position + transform.position;
 						if (Physics.CheckSphere (position, scale.magnitude / 4f) == false) {
 								o = (Transform)Instantiate (prefab, position, Quaternion.AngleAxis (Random.value * 360f, Vector3.back));
+								o.parent = transform;
 								o.localScale = scale;
 								o.renderer.material.SetColor ("_Color", Color.Lerp (o.renderer.material.color, shade, (float)Random.value));
 								count++;
-								print (count);
+								//print (count);
 						}
 				}
+				yield return null;
 	
 		}
 

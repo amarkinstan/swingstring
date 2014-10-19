@@ -10,7 +10,7 @@ public class PlayerBounds : MonoBehaviour
 		// Use this for initialization
 		void Start ()
 		{
-				rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+				
 		}
 	
 		// Update is called once per frame
