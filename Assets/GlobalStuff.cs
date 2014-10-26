@@ -18,7 +18,7 @@ public class GlobalStuff : MonoBehaviour
 		{
 	
 				//print (GameObject.FindObjectsOfType<GameObject> ().Length);
-				//print ((Mathf.PerlinNoise (Random.value, Random.value) * 100f));
+				//print ((Mathf.PerlinNoise (Random.Range (0f, 10f), Random.Range (0f, 10f)) * 100f));
 	
 		}
 }
