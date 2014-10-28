@@ -22,6 +22,8 @@ public class CreateChunk : MonoBehaviour
 		private int savedSeed;
 		private float density;
 		private float size;
+		
+		//public static bool dead = false;
 
 		Transform o;
 
@@ -40,7 +42,19 @@ public class CreateChunk : MonoBehaviour
 				print ("size: " + size);
 				minSize = size * minSize;
 				maxSize = size * maxSize;
-				numberOfBlocks = 5 + (int)(numberOfBlocks * density);
+				if (minSize.x < 1f) {
+						minSize.Set (1f, minSize.y, minSize.z);
+				}
+				if (minSize.y < 1f) {
+						minSize.Set (minSize.x, 1f, minSize.z);
+				}
+				if (maxSize.x < 1f) {
+						maxSize.Set (1f, maxSize.y, maxSize.z);
+				}
+				if (maxSize.y < 1f) {
+						maxSize.Set (maxSize.x, 1f, maxSize.z);
+				}
+				numberOfBlocks = 3 + (int)(numberOfBlocks * density);
 				if (density < 0.5f) {
 						shade = shade1;
 						prefab = prefab1;
@@ -51,7 +65,17 @@ public class CreateChunk : MonoBehaviour
 				
 					
 		}
-	
+		
+//		public void Kill ()
+//		{
+//		
+//				if (blocksCreated >= numberOfBlocks) {
+//						dead = true;
+//		
+//				}
+//			
+//		
+//		}
 
 		static float Gaussian ()
 		{
@@ -71,6 +95,19 @@ public class CreateChunk : MonoBehaviour
 		// Update is called once per frame
 		void Update ()
 		{
+//				if (dead) {
+//				
+//						Transform[] list = gameObject.GetComponentsInChildren<Transform> ();
+//						
+//						if (list.Length == 0) {
+//								//DestroyObject (gameObject);
+//						} else {
+//				
+//								DestroyObject (list [0].gameObject);
+//						}
+//				
+//				}
+		
 		
 				if (blocksCreated < numberOfBlocks) {
 					
@@ -79,7 +116,7 @@ public class CreateChunk : MonoBehaviour
 						Random.seed = savedSeed + blocksCreated;
 		
 		
-						for (int i = 1; i < blocksPerFrame; i++) {
+						for (int i = 1; i <= blocksPerFrame; i++) {
 								Vector3 scale = new Vector3 (
 										Random.Range (minSize.x, maxSize.x),
 										Random.Range (minSize.y, maxSize.y),

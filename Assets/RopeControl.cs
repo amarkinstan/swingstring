@@ -355,7 +355,13 @@ public class RopeControl : MonoBehaviour
 						anchorPoint = hit.point + (hit.normal * 0.05f);
 						anchorBendObject = (GameObject)Instantiate (ropeBend);
 						anchorBendObject.transform.position = anchorPoint;
+						player.renderer.material.color = hit.transform.renderer.material.color;
+						Color trail = hit.transform.renderer.material.color;
+						trail = Color.Lerp (trail, Color.white, 0.5f);
+						player.GetComponent<TrailRenderer> ().material.SetColor ("_Color", trail);
+						
 						return true;
+						
 				} else {
 						return false;
 				}
@@ -381,6 +387,7 @@ public class RopeControl : MonoBehaviour
 								Ropes [0].hasBend.renderer.enabled = false;
 				
 								attatched = true;
+								
 						}
 				}
 				//Retract Rope

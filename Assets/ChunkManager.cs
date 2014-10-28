@@ -101,7 +101,8 @@ public class ChunkManager : MonoBehaviour
 				foreach (string entry in list) {
 						if (Vector3.Distance (Player.transform.position, allChunks [entry].field.transform.position) > maxDistance) {
 			
-								Object.Destroy (allChunks [entry].field);
+								DestroyObject (allChunks [entry].field);
+								//allChunks [entry].field.SendMessage ("Kill");
 								allChunks.Remove (entry);
 			
 						}
