@@ -28,18 +28,22 @@ public class ChunkManager : MonoBehaviour
 				allChunks.Add ("-1,-1", new Chunk (-1, -1, basicField));
 				
 		
-				//Chunk dingo = new Chunk (0, 0, basicField);
+				
 	
 		}
+		//Chunk - COntainer for information about the block field in a 100 by 100 area
 		private class Chunk : Object
 		{
-	
+				//position in index space
 				int xIndex;
 				int yIndex;
+				//what type of chunk
 				GameObject fieldType;
+				//The chunk we create that contains the blocks
 				public GameObject field;
-				Object save;
+				
 	
+				//new chunk
 				public Chunk (int xCoord, int yCoord, GameObject type)
 				{
 	
@@ -47,7 +51,7 @@ public class ChunkManager : MonoBehaviour
 						this.yIndex = yCoord;
 						this.fieldType = type;
 						this.field = (GameObject)Instantiate (type, new Vector3 (IndexToWorld (xCoord), IndexToWorld (yCoord), 0f), Quaternion.identity);
-						//do something to save the new chunk
+						
 						
 	
 				}
@@ -56,6 +60,7 @@ public class ChunkManager : MonoBehaviour
 	
 		}
 		
+		//Transform from index space to world space
 		static float IndexToWorld (int index)
 		{
 			
@@ -63,6 +68,7 @@ public class ChunkManager : MonoBehaviour
 			
 		}
 		
+		//Transform from world space to index space
 		static int WorldToIndex (float world)
 		{
 			
@@ -82,6 +88,9 @@ public class ChunkManager : MonoBehaviour
 		// Update is called once per frame
 		void Update ()
 		{
+				
+				//check if the 3 x 3 chunks around the player and load  ones that are missing
+				
 				int currentX = WorldToIndex (Player.transform.position.x);
 				int currentY = WorldToIndex (Player.transform.position.y);
 				for (int q = -1; q <= 1; q++) {		
@@ -98,6 +107,8 @@ public class ChunkManager : MonoBehaviour
 				}
 				List<string> list = allChunks.Select (x => x.Key).ToList ();
 			
+				
+				//delete chunks that are too far away from teh player
 				foreach (string entry in list) {
 						if (Vector3.Distance (Player.transform.position, allChunks [entry].field.transform.position) > maxDistance) {
 			
