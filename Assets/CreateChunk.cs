@@ -21,14 +21,18 @@ public class CreateChunk : MonoBehaviour
 		//amout of ratation allowed
 		public float maxRotation;
 		
+			
 		//chance of sprite appearing 0 -> 1
-		public float spriteChance;
+		public float[] spriteChance;
 		
 		//smallest block a sprite will appear on?
-		public float spriteMinSize;
+		public float[] spriteMinSize;
 		
 		//scale factor to apply to sprite
-		public float spriteScaling;
+		public float[] spriteScaling;
+		
+		//how white the sprite goes
+		public float[] spriteWhiteAmount;
 		
 		//couont of blocks in field
 		private int count = 0;
@@ -47,8 +51,7 @@ public class CreateChunk : MonoBehaviour
 		// what we will call our generic block
 		Transform o;
 		
-		//generic sprite object
-		private Transform childSprite;
+		
 	
 		// Use this for initialization
 		void Start ()
@@ -143,40 +146,42 @@ public class CreateChunk : MonoBehaviour
 										o.renderer.material.SetColor ("_Color", C);
 										
 										
+										int j = 0;
 										
 										//get the sprite plane attatched to the block
-										childSprite = o.GetChild (0);
+										foreach (Transform childSprite in  o) {
 										
-										//should the sprite appear?
-										if (Random.value > spriteChance) {
-												childSprite.renderer.enabled = false;
+												//should the sprite appear?
+												if (Random.value > spriteChance [j]) {
+														childSprite.renderer.enabled = false;
+												}
+										
+												if (o.localScale.x < spriteMinSize [j]) {
+														childSprite.renderer.enabled = false;
+												}
+										
+												//set size of sprite to something reasonable
+												childSprite.localScale = new Vector3 (1f / o.localScale.x, 1f / o.localScale.y, 1f);
+												childSprite.localScale = childSprite.localScale * spriteScaling [j] * Random.Range (0.5f, 1f);
+										
+												//adjust vertical position
+												childSprite.localPosition = new Vector3 (childSprite.localPosition.x, 0.5f + (childSprite.localScale.y * 0.5f), childSprite.localPosition.z);
+										
+												//adjust horizontal postion
+										
+												childSprite.localPosition = new Vector3 (childSprite.localPosition.x + Random.Range (-0.4f, 0.4f), childSprite.localPosition.y, childSprite.localPosition.z);
+										
+												//adjust colour
+												childSprite.renderer.material.color = Color.Lerp (new Color (C.r, C.g, C.b, 1f), Color.white, spriteWhiteAmount [j]);
+										
+										
+												//adjust width
+												if (Random.value < 0.5f) {
+														childSprite.localScale = new Vector3 (-childSprite.localScale.x, childSprite.localScale.y, childSprite.localScale.z);
+												}
+												childSprite.localScale = new Vector3 (childSprite.localScale.x + (Random.Range (-0.05f, 0.05f)), childSprite.localScale.y, childSprite.localScale.z);
+												j++;
 										}
-										
-										if (o.localScale.x < spriteMinSize) {
-												childSprite.renderer.enabled = false;
-										}
-										
-										//set size of sprite to something reasonable
-										childSprite.localScale = new Vector3 (1f / o.localScale.x, 1f / o.localScale.y, 1f);
-										childSprite.localScale = childSprite.localScale * spriteScaling * Random.Range (0.5f, 1f);
-										
-										//adjust vertical position
-										childSprite.localPosition = new Vector3 (childSprite.localPosition.x, 0.5f + (childSprite.localScale.y * 0.5f), childSprite.localPosition.z);
-										
-										//adjust horizontal postion
-										
-										childSprite.localPosition = new Vector3 (childSprite.localPosition.x + Random.Range (-0.4f, 0.4f), childSprite.localPosition.y, childSprite.localPosition.z);
-										
-										//adjust colour
-										childSprite.renderer.material.color = Color.Lerp (new Color (C.r, C.g, C.b, 1f), Color.white, 0.35f);
-										
-										
-										//adjust width
-										if (Random.value < 0.5f) {
-												childSprite.localScale = new Vector3 (-childSprite.localScale.x, childSprite.localScale.y, childSprite.localScale.z);
-										}
-										childSprite.localScale = new Vector3 (childSprite.localScale.x + (Random.Range (-0.1f, 0.1f)), childSprite.localScale.y, childSprite.localScale.z);
-										
 								}
 		
 		
