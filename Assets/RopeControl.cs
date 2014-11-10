@@ -273,8 +273,10 @@ public class RopeControl : MonoBehaviour
 						RaycastHit hit;
 						Vector3 direction;
 						float distance;
-			
-			
+						
+						int mask = 1 << 11 + 1 << 12;
+						mask = ~mask;
+						
 						//Look for Splits
 						direction = toCheck [0].anchor - player.transform.position;
 						direction.Normalize ();
@@ -282,7 +284,8 @@ public class RopeControl : MonoBehaviour
 						Debug.DrawLine (player.transform.position, toCheck [0].anchor, Color.red, Time.deltaTime);
 						distance = Vector3.Distance (player.transform.position, toCheck [0].anchor) - 0.25f;
 						if (distance > 0f) {
-								if (Physics.Raycast (lookSplit, out hit, distance)) {
+								//if (Physics.Raycast (lookSplit, out hit, distance, LayerMask.NameToLayer ("NoRopeCollision"))) {
+								if (Physics.Raycast (lookSplit, out hit, distance, mask)) {
 										RopeSplit (toCheck, FindCorner (hit.point, hit.transform, 0.1f));
 					
 										return true;
@@ -350,7 +353,7 @@ public class RopeControl : MonoBehaviour
 				distance = clickVector.magnitude;
 				direction = clickVector / distance;
 				Ray tryAnchor = new Ray (player.transform.position, direction);
-				if (Physics.Raycast (tryAnchor, out hit, maxRopeLength)) {
+				if (Physics.Raycast (tryAnchor, out hit, maxRopeLength, LayerMask.NameToLayer ("NoAttatch"))) {
 			
 						anchorPoint = hit.point + (hit.normal * 0.05f);
 						anchorBendObject = (GameObject)Instantiate (ropeBend);

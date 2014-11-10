@@ -9,7 +9,7 @@ public class GlobalStuff : MonoBehaviour
 		void Start ()
 		{
 		
-				Seed = Random.value * 1000;
+				Seed = Random.value * 10000;
 	
 		}
 	

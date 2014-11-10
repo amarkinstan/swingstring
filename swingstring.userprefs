@@ -1,8 +1,10 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\SpeedBar.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\GlobalStuff.cs">
     <Files>
-      <File FileName="Assets\SpeedBar.cs" Line="34" Column="5" />
+      <File FileName="Assets\BlockBounce.cs" Line="12" Column="4" />
+      <File FileName="Assets\RopeControl.cs" Line="279" Column="7" />
+      <File FileName="Assets\GlobalStuff.cs" Line="13" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\BlockBounce.cs" />
      <Compile Include="Assets\CameraZoom.cs" />
      <Compile Include="Assets\ChunkManager.cs" />
      <Compile Include="Assets\CreateChunk.cs" />
