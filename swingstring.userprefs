@@ -1,10 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\GlobalStuff.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CreateChunk.cs">
     <Files>
-      <File FileName="Assets\BlockBounce.cs" Line="12" Column="4" />
-      <File FileName="Assets\RopeControl.cs" Line="279" Column="7" />
-      <File FileName="Assets\GlobalStuff.cs" Line="13" Column="2" />
+      <File FileName="Assets\SlowField.cs" Line="23" Column="40" />
+      <File FileName="Assets\BlockBounce.cs" Line="7" Column="3" />
+      <File FileName="Assets\TerminalVelocity.cs" Line="18" Column="4" />
+      <File FileName="Assets\CreateChunk.cs" Line="22" Column="3" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -274,7 +274,7 @@ public class RopeControl : MonoBehaviour
 						Vector3 direction;
 						float distance;
 						
-						int mask = 1 << 11 + 1 << 12;
+						int mask = 1 << 9 | 1 << 12;
 						mask = ~mask;
 						
 						//Look for Splits
@@ -348,14 +348,21 @@ public class RopeControl : MonoBehaviour
 				RaycastHit hit;
 				Vector3 mousePos;
 				float distance;
+				int mask = 1 << 11 | 1 << 12;
+				mask = ~mask;
 				mousePos = camera.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 10f));
 				clickVector = mousePos - player.transform.position;
 				distance = clickVector.magnitude;
 				direction = clickVector / distance;
 				Ray tryAnchor = new Ray (player.transform.position, direction);
-				if (Physics.Raycast (tryAnchor, out hit, maxRopeLength, LayerMask.NameToLayer ("NoAttatch"))) {
+				if (Physics.Raycast (tryAnchor, out hit, maxRopeLength, mask)) {
 			
 						anchorPoint = hit.point + (hit.normal * 0.05f);
+						if (hit.transform.tag == "spinner") {
+						
+								anchorPoint = hit.transform.position;
+						
+						}
 						anchorBendObject = (GameObject)Instantiate (ropeBend);
 						anchorBendObject.transform.position = anchorPoint;
 						player.renderer.material.color = hit.transform.renderer.material.color;

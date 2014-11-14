@@ -54,7 +54,9 @@
      <Compile Include="Assets\HUDFPS.cs" />
      <Compile Include="Assets\Hotkeys.cs" />
      <Compile Include="Assets\RopeControl.cs" />
+     <Compile Include="Assets\SlowField.cs" />
      <Compile Include="Assets\SpeedBar.cs" />
+     <Compile Include="Assets\SpinnerCollision.cs" />
      <Compile Include="Assets\TerminalVelocity.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
