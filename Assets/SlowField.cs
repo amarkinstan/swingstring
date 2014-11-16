@@ -5,30 +5,38 @@ public class SlowField : MonoBehaviour
 {
 
 		private GameObject player;
-		public Vector3 savedGravity;
+		private Vector3 savedGravity;
 		public float maxSpeed;
 		public bool slows;
+		public bool noGrav;
 	
 		// Use this for initialization
 		void Start ()
 		{
 		
 				player = GameObject.Find ("Player");
-		
+				savedGravity = Physics.gravity;
 		}
 	
 	
 		void OnTriggerStay (Collider who)
 		{
 				if (who == player.collider && slows) {
-						player.rigidbody.velocity = player.rigidbody.velocity.normalized * maxSpeed;
+						if (player.rigidbody.velocity.magnitude > maxSpeed) {
+								player.rigidbody.velocity = player.rigidbody.velocity.normalized * (player.rigidbody.velocity.magnitude * 0.97f);
+						}
+				}
+				if (who == player.collider && noGrav) {
+			
+						Physics.gravity = Vector3.zero;
+			
 				}
 		
 		}
 		void OnTriggerEnter (Collider who)
 		{
 		
-				if (who == player.collider) {
+				if (who == player.collider && noGrav) {
 						
 						Physics.gravity = Vector3.zero;
 			
@@ -37,9 +45,9 @@ public class SlowField : MonoBehaviour
 		}
 		void OnTriggerExit (Collider who)
 		{
-				if (who == player.collider) {
+				if (who == player.collider && noGrav) {
 						
-						Physics.gravity = savedGravity;
+						Physics.gravity = GlobalStuff.Gravity;
 			
 				}
 		

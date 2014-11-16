@@ -274,7 +274,7 @@ public class RopeControl : MonoBehaviour
 						Vector3 direction;
 						float distance;
 						
-						int mask = 1 << 9 | 1 << 12;
+						int mask = 1 << 9 | 1 << 12 | 1 << 11;
 						mask = ~mask;
 						
 						//Look for Splits
@@ -348,7 +348,7 @@ public class RopeControl : MonoBehaviour
 				RaycastHit hit;
 				Vector3 mousePos;
 				float distance;
-				int mask = 1 << 11 | 1 << 12;
+				int mask = 1 << 11 | 1 << 12 | 1 << 2;
 				mask = ~mask;
 				mousePos = camera.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 10f));
 				clickVector = mousePos - player.transform.position;

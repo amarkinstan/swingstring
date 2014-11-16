@@ -58,6 +58,7 @@
      <Compile Include="Assets\SpeedBar.cs" />
      <Compile Include="Assets\SpinnerCollision.cs" />
      <Compile Include="Assets\TerminalVelocity.cs" />
+     <Compile Include="Assets\setupField.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CreateChunk : MonoBehaviour
 {
@@ -8,6 +9,16 @@ public class CreateChunk : MonoBehaviour
 		public Transform prefab;
 		
 		public Transform StoneCircle;
+		
+		public Transform AGField;
+		
+		public Transform SlowField;
+		
+		public Transform Bouncer;
+		
+		public Transform Spinner;
+		
+		public Transform NoAttach;
 				
 		//should we make empty chunks?
 		public bool canBeEmpty;
@@ -31,7 +42,27 @@ public class CreateChunk : MonoBehaviour
 		public float overlapChance;
 		
 		private bool overlap = false;
-								
+		
+		public bool canHaveSpinner;
+		
+		public float spinnerChance;
+		
+		public bool canHaveBouncer;
+		
+		public float bouncerChance;
+		
+		public bool canHaveSlow;
+		
+		public float slowChance;
+		
+		public bool canHaveAG;
+		
+		public float agChance;
+		
+		public bool canHaveNoAttatch;
+		
+		public float noAttatchChance;
+																				
 		//number of blocks in field
 		public int numberOfBlocks;
 		//number of frames to  generate every frame
@@ -46,7 +77,8 @@ public class CreateChunk : MonoBehaviour
 		//amout of ratation allowed
 		public float maxRotation;
 		
-			
+	
+				
 		//chance of sprite appearing 0 -> 1
 		public float[] spriteChance;
 		
@@ -186,21 +218,163 @@ public class CreateChunk : MonoBehaviour
 				return u * fac;
 		}
 	
-		Transform MakeBlock (Vector3 blockScale, Vector3 blockPosition)
+		void MakeBlock (Vector3 blockScale, Vector3 blockPosition)
 		{		
+				//select a block
+				
+				
+				int availableBlocks = 0;
+				
+				Transform type = prefab;
+				
 				Transform o;
-				
-				//make block
-				o = (Transform)Instantiate (prefab, blockPosition, Quaternion.AngleAxis ((Random.value * 2f * maxRotation) - maxRotation, Vector3.back));
-				//make the block a child of the chunk
-				o.parent = transform;
-				//change scale
-				o.localScale = blockScale;
-				//set the colour as defined by the user
 		
+				Color C;
+		
+				if (canHaveAG) {
+						if (Random.value < agChance) {
+								availableBlocks = 1;
+						}
+				}
+				if (canHaveSlow) {
+						if (Random.value < slowChance) {
+								availableBlocks = 2;
+						}
+				}
+				if (canHaveBouncer) {
+						if (Random.value < bouncerChance) {
+								availableBlocks = 3;
+						}
+				}
+				if (canHaveSpinner) {
+						if (Random.value < spinnerChance) {
+								availableBlocks = 4;
+						}
+				}
+				if (canHaveNoAttatch) {
+						if (Random.value < noAttatchChance) {
+								availableBlocks = 5;
+						}
+				}
+		
+								
 				
 				
-				return o;
+				switch (availableBlocks) {
+				 
+				case 1:
+						type = AGField;
+						//make block
+						o = (Transform)Instantiate (type, blockPosition, Quaternion.AngleAxis (Random.value * 360f, Vector3.back));
+						//make the block a child of the chunk
+						o.parent = transform;
+						//change scale
+						o.localScale = new Vector3 (blockScale.magnitude * 2.5f, blockScale.magnitude * 2.5f, Random.Range (2f, 4f));
+						//set the colour as defined by the user
+			
+						break;
+				 
+				case 2:
+						type = SlowField;
+			
+						//make block
+						o = (Transform)Instantiate (type, blockPosition, Quaternion.AngleAxis (Random.value * 360f, Vector3.back));
+						//make the block a child of the chunk
+						o.parent = transform;
+						//change scale
+						o.localScale = new Vector3 (blockScale.magnitude * 2.5f, blockScale.magnitude * 2.5f, Random.Range (2f, 4f));
+						if (o.localScale.x > 25f) {
+								o.localScale = new Vector3 (25f, 25f, o.localScale.z);
+						}
+						
+						//set the colour as defined by the user
+			
+			
+			
+						
+						break;
+						
+				case 3:
+						type = Bouncer;
+						//make block
+						o = (Transform)Instantiate (type);
+						o.position = blockPosition;
+						//make the block a child of the chunk
+						o.parent = transform;
+						//change scale
+						o.localScale = o.localScale * Random.Range (0.8f, 2f);
+						//set the colour as defined by the user
+			
+			
+			
+						
+			
+						
+						break;
+						
+				case 4:
+						type = Spinner;
+						//make block
+						o = (Transform)Instantiate (type);
+						o.position = blockPosition;
+						//make the block a child of the chunk
+						o.parent = transform;
+						//change scale
+						
+						//set the colour as defined by the user
+			
+			
+			
+						
+			
+						
+						break;
+				
+				case 5:
+						type = NoAttach;
+			
+			
+						//make block
+						o = (Transform)Instantiate (type, blockPosition, Quaternion.AngleAxis ((Random.value * 2f * maxRotation) - maxRotation, Vector3.back));
+						//make the block a child of the chunk
+						o.parent = transform;
+						//change scale
+						o.localScale = blockScale;
+						//set the colour as defined by the user
+				
+						C = Color.Lerp (Color.black, Color.white, (float)Random.Range (0.2f, 0.6f));
+			
+								
+						o.renderer.material.SetColor ("_Color", C);
+			
+						setUpSprites (o, C);
+						break;
+				
+				case 0:
+						type = prefab;
+						
+			
+						//make block
+						o = (Transform)Instantiate (type, blockPosition, Quaternion.AngleAxis ((Random.value * 2f * maxRotation) - maxRotation, Vector3.back));
+						//make the block a child of the chunk
+						o.parent = transform;
+						//change scale
+						o.localScale = blockScale;
+						//set the colour as defined by the user
+			
+			
+			
+						C = Color.Lerp (shade1, shade2, (float)Random.value);
+			
+						o.renderer.material.SetColor ("_Color", C);
+			
+						setUpSprites (o, C);
+						break; 
+				 
+				}
+				
+				
+				
 		
 		}
 		
@@ -268,8 +442,8 @@ public class CreateChunk : MonoBehaviour
 								if (mesa) {
 								
 										scale = new Vector3 (
-						Random.Range (30f, 60f),
-						Random.Range (30f, 60f),
+						Random.Range (30f, 70f),
+						Random.Range (30f, 70f),
 						Random.Range (minSize.z, maxSize.z));
 						
 										position = Vector3.zero;
@@ -288,26 +462,18 @@ public class CreateChunk : MonoBehaviour
 										if (Physics.CheckSphere (position, scale.magnitude / 3f) == false || overlap) {
 												count++;
 					
-												Transform o = MakeBlock (scale, position);
+												MakeBlock (scale, position);
 										
-												Color C = Color.Lerp (shade1, shade2, (float)Random.value);
-					
-												o.renderer.material.SetColor ("_Color", C);
-										
-												setUpSprites (o, C);
+												
 										}
 								}
 								if (circle) {
 										if ((Physics.CheckSphere (position, scale.magnitude / 3f) == false) && ((Vector3.Distance (position, transform.position) < 50f) == false)) {
 												count++;
 						
-												Transform o = MakeBlock (scale, position);
+												MakeBlock (scale, position);
 						
-												Color C = Color.Lerp (shade1, shade2, (float)Random.value);
-						
-												o.renderer.material.SetColor ("_Color", C);
-						
-												setUpSprites (o, C);
+												
 										}
 								}
 								
