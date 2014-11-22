@@ -358,10 +358,16 @@ public class RopeControl : MonoBehaviour
 				if (Physics.Raycast (tryAnchor, out hit, maxRopeLength, mask)) {
 			
 						anchorPoint = hit.point + (hit.normal * 0.05f);
+						//special block interactions
 						if (hit.transform.tag == "spinner") {
 						
 								anchorPoint = hit.transform.position;
 						
+						}
+						if (hit.transform.tag == "NoAttatch") {
+				
+								return false;
+				
 						}
 						anchorBendObject = (GameObject)Instantiate (ropeBend);
 						anchorBendObject.transform.position = anchorPoint;
@@ -387,6 +393,7 @@ public class RopeControl : MonoBehaviour
 						//print (deltaAngle);
 			
 				}
+				
 				//Make the rope with left click
 				if ((Input.GetButtonDown ("Attach + Pull")) == true && attatched == false) {
 						if (isAnchored ()) {
