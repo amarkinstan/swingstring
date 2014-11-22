@@ -57,6 +57,8 @@
      <Compile Include="Assets\SlowField.cs" />
      <Compile Include="Assets\SpeedBar.cs" />
      <Compile Include="Assets\SpinnerCollision.cs" />
+     <Compile Include="Assets\SpriteSettings.cs" />
+     <Compile Include="Assets\SpriteSettingsSpecial.cs" />
      <Compile Include="Assets\TerminalVelocity.cs" />
      <Compile Include="Assets\setupField.cs" />
   </ItemGroup>

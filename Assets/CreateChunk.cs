@@ -79,17 +79,7 @@ public class CreateChunk : MonoBehaviour
 		
 	
 				
-		//chance of sprite appearing 0 -> 1
-		public float[] spriteChance;
-		
-		//smallest block a sprite will appear on?
-		public float[] spriteMinSize;
-		
-		//scale factor to apply to sprite
-		public float[] spriteScaling;
-		
-		//how white the sprite goes
-		public float[] spriteWhiteAmount;
+
 		
 		//couont of blocks in field
 		private int count = 0;
@@ -303,9 +293,9 @@ public class CreateChunk : MonoBehaviour
 						o.parent = transform;
 						//change scale
 						o.localScale = o.localScale * Random.Range (0.8f, 2f);
-						//set the colour as defined by the user
+						
 			
-			
+						setUpSpritesSpecial (o);
 			
 						
 			
@@ -321,10 +311,9 @@ public class CreateChunk : MonoBehaviour
 						o.parent = transform;
 						//change scale
 						
-						//set the colour as defined by the user
+						
 			
-			
-			
+						setUpSpritesSpecial (o);
 						
 			
 						
@@ -342,8 +331,7 @@ public class CreateChunk : MonoBehaviour
 						o.localScale = blockScale;
 						//set the colour as defined by the user
 				
-						C = Color.Lerp (Color.black, Color.white, (float)Random.Range (0.2f, 0.6f));
-			
+						C = o.renderer.material.color;		
 								
 						o.renderer.material.SetColor ("_Color", C);
 			
@@ -378,26 +366,54 @@ public class CreateChunk : MonoBehaviour
 		
 		}
 		
-		void setUpSprites (Transform block, Color shade)
+		void setUpSpritesSpecial (Transform block)
 		{
-		
-				int j = 0;
-		
 				//get the sprite plane attatched to the block
 				foreach (Transform childSprite in  block) {
 			
+						SpriteSettingsSpecial spriteSettings = childSprite.GetComponent<SpriteSettingsSpecial> ();
+			
+						//adjust colour
+						
+						Color C1 = Color.Lerp (childSprite.renderer.material.color, Color.white, spriteSettings.colourRange);
+						Color C2 = Color.Lerp (childSprite.renderer.material.color, Color.black, spriteSettings.colourRange);
+						
+						childSprite.renderer.material.color = Color.Lerp (C1, C2, Random.value);
+						
+			
+			
+			
+						//adjust width
+						if (Random.value < 0.5f && spriteSettings.canFlip) {
+								childSprite.localScale = new Vector3 (-childSprite.localScale.x, childSprite.localScale.y, childSprite.localScale.z);
+						}
+						//childSprite.localScale = new Vector3 (childSprite.localScale.x + (Random.Range (-0.05f, 0.05f)), childSprite.localScale.y, childSprite.localScale.z);
+		
+		
+				}
+		}
+		
+		void setUpSprites (Transform block, Color shade)
+		{
+		
+				
+				//get the sprite plane attatched to the block
+				foreach (Transform childSprite in  block) {
+						
+						SpriteSettings spriteSettings = childSprite.GetComponent<SpriteSettings> ();
+						
 						//should the sprite appear?
-						if (Random.value > spriteChance [j]) {
+						if (Random.value > spriteSettings.spriteChance) {
 								childSprite.renderer.enabled = false;
 						}
 			
-						if (block.localScale.x < spriteMinSize [j]) {
+						if (block.localScale.x < spriteSettings.minBlockWidth) {
 								childSprite.renderer.enabled = false;
 						}
 			
 						//set size of sprite to something reasonable
 						childSprite.localScale = new Vector3 (1f / block.localScale.x, 1f / block.localScale.y, 1f);
-						childSprite.localScale = childSprite.localScale * spriteScaling [j] * Random.Range (0.5f, 1f);
+						childSprite.localScale = childSprite.localScale * spriteSettings.spriteScaling * Random.Range (0.5f, 1f);
 			
 						//adjust vertical position
 						childSprite.localPosition = new Vector3 (childSprite.localPosition.x, 0.5f + (childSprite.localScale.y * 0.5f), childSprite.localPosition.z);
@@ -407,15 +423,18 @@ public class CreateChunk : MonoBehaviour
 						childSprite.localPosition = new Vector3 (childSprite.localPosition.x + Random.Range (-0.4f, 0.4f), childSprite.localPosition.y, childSprite.localPosition.z);
 			
 						//adjust colour
-						childSprite.renderer.material.color = Color.Lerp (new Color (shade.r, shade.g, shade.b, 1f), Color.white, spriteWhiteAmount [j]);
+						if (spriteSettings.changeColor) {
+								childSprite.renderer.material.color = Color.Lerp (new Color (shade.r, shade.g, shade.b, 1f), Color.white, spriteSettings.spriteLightness);
+						}
 			
-			
+						
+						
 						//adjust width
 						if (Random.value < 0.5f) {
 								childSprite.localScale = new Vector3 (-childSprite.localScale.x, childSprite.localScale.y, childSprite.localScale.z);
 						}
-						childSprite.localScale = new Vector3 (childSprite.localScale.x + (Random.Range (-0.05f, 0.05f)), childSprite.localScale.y, childSprite.localScale.z);
-						j++;
+						//childSprite.localScale = new Vector3 (childSprite.localScale.x + (Random.Range (-0.05f, 0.05f)), childSprite.localScale.y, childSprite.localScale.z);
+						
 				}
 		
 		}
