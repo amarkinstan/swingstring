@@ -213,7 +213,9 @@ public class CreateChunk : MonoBehaviour
 				//select a block
 				
 				
-				int availableBlocks = 0;
+				List<int> availableBlocks = new List<int> ();
+				
+				int blockNum = 0;
 				
 				Transform type = prefab;
 				
@@ -223,34 +225,46 @@ public class CreateChunk : MonoBehaviour
 		
 				if (canHaveAG) {
 						if (Random.value < agChance) {
-								availableBlocks = 1;
+								availableBlocks.Add (1);
 						}
 				}
 				if (canHaveSlow) {
 						if (Random.value < slowChance) {
-								availableBlocks = 2;
+								availableBlocks.Add (2);
 						}
 				}
 				if (canHaveBouncer) {
 						if (Random.value < bouncerChance) {
-								availableBlocks = 3;
+								availableBlocks.Add (3);
 						}
 				}
 				if (canHaveSpinner) {
 						if (Random.value < spinnerChance) {
-								availableBlocks = 4;
+								availableBlocks.Add (4);
 						}
 				}
 				if (canHaveNoAttatch) {
 						if (Random.value < noAttatchChance) {
-								availableBlocks = 5;
+								availableBlocks.Add (5);
 						}
 				}
 		
 								
 				
 				
-				switch (availableBlocks) {
+				
+				
+				if (availableBlocks.Count == 0) {
+			
+						blockNum = 0;
+			
+				} else {
+				
+						blockNum = availableBlocks [Random.Range (0, availableBlocks.Count - 1)];
+				
+				}
+				
+				switch (blockNum) {
 				 
 				case 1:
 						type = AGField;
