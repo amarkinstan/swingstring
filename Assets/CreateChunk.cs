@@ -5,7 +5,9 @@ using System.Collections.Generic;
 public class CreateChunk : MonoBehaviour
 {
 		
-		//The block to place
+		//The blocks to place
+		
+		//default block
 		public Transform prefab;
 		
 		public Transform StoneCircle;
@@ -25,40 +27,48 @@ public class CreateChunk : MonoBehaviour
 		
 		public float emptyChance;
 		
+		//should we make mesas (huge blocks in the centre of a chunk?)
 		public bool canBeMesa;
 		
 		public float mesaChance;
 		
 		private bool mesa = false;
 		
+		//should we make stoneCircles?
 		public bool canBeStoneCircle;
 		
 		public float circleChance;
 		
 		private bool circle = false;
 		
+		//should we make chunks were the blocks overlap on creation?
 		public bool canBeOverlap;
 		
 		public float overlapChance;
 		
 		private bool overlap = false;
 		
+		//should we spawn clouds that allow the player to freely spin around them?
 		public bool canHaveSpinner;
 		
 		public float spinnerChance;
 		
+		//should we spawn clouds that are very bouncy?
 		public bool canHaveBouncer;
 		
 		public float bouncerChance;
 		
+		//should we sspawn areas that slow the player?
 		public bool canHaveSlow;
 		
 		public float slowChance;
 		
+		//should we spawn aint-gravity fields?
 		public bool canHaveAG;
 		
 		public float agChance;
 		
+		//shouls we spwan blocks that he player can't attach to?
 		public bool canHaveNoAttatch;
 		
 		public float noAttatchChance;
@@ -67,19 +77,16 @@ public class CreateChunk : MonoBehaviour
 		public int numberOfBlocks;
 		//number of frames to  generate every frame
 		public int blocksPerFrame;
-		//how many blocks we ahve made so far
+		//how many blocks we have made so far
 		private int blocksCreated;
 		//size range for blocks - affected by size perlin
 		public Vector3 minSize, maxSize;
 		//extent of field should be 100
 		public Vector2 fieldSize;
 		
-		//amout of ratation allowed
+		//amout of ratation allowed for deault blocks in the the chunk (affects postion of sprites)
 		public float maxRotation;
 		
-	
-				
-
 		
 		//couont of blocks in field
 		private int count = 0;
@@ -87,7 +94,9 @@ public class CreateChunk : MonoBehaviour
 		private float seed;
 		private int savedSeed;
 		
+		//number that respresents the amount of number of blocks int he chunk, effects numberOfBlocks
 		private float density;
+		//scale factor for default(and some others) blockss
 		private float size;
 		
 		//two colours that define a range of clours between them
@@ -96,32 +105,29 @@ public class CreateChunk : MonoBehaviour
 		
 		
 	
-		
-		
-	
 		// Use this for initialization
 		void Start ()
 		{
 				
-				
-				
-				
 				//get seed from global seed
 				seed = GlobalStuff.Seed;
 				
-				//get the seed at this position
+				//get the seed at this position, needed for prooer terrain generation
 				savedSeed = (int)(Mathf.PerlinNoise (transform.position.x / 1000f + 0.01f, transform.position.y / 1000f + 0.01f) * 1000000 + seed);
 				
 				Random.seed = (int)savedSeed;
 				
-				
+				//find the density and size
 				density = Mathf.PerlinNoise (transform.position.x / 1000f + seed, transform.position.y / 1000f + seed);
 				size = Mathf.PerlinNoise (transform.position.x / 1000f + (seed * 2f), transform.position.y / 1000f + (seed * 2f));
+				//make size effect scale
 				size = size * 2f;
 				//print ("desnity: " + density);
 				//print ("size: " + size);
 				minSize = size * minSize;
 				maxSize = size * maxSize;
+				
+				//make sure that the min thickness for blcoks is 1
 				if (minSize.x < 1f) {
 						minSize.Set (1f, minSize.y, minSize.z);
 				}
@@ -134,6 +140,7 @@ public class CreateChunk : MonoBehaviour
 				if (maxSize.y < 1f) {
 						maxSize.Set (maxSize.x, 1f, maxSize.z);
 				}
+				//make density effet number of blocks, there must be at least soe blocks in the chunk
 				numberOfBlocks = 3 + (int)(numberOfBlocks * density);
 				
 				print ("number of blocks " + numberOfBlocks);
@@ -192,7 +199,7 @@ public class CreateChunk : MonoBehaviour
 					
 		}
 		
-
+		//return gaussian (-4ish to 4 ish)
 		static float Gaussian ()
 		{
 				float u, v, S;
@@ -208,11 +215,10 @@ public class CreateChunk : MonoBehaviour
 				return u * fac;
 		}
 	
+		//generate a single block
 		void MakeBlock (Vector3 blockScale, Vector3 blockPosition)
 		{		
 				//select a block
-				
-				
 				List<int> availableBlocks = new List<int> ();
 				
 				int blockNum = 0;
@@ -222,7 +228,7 @@ public class CreateChunk : MonoBehaviour
 				Transform o;
 		
 				Color C;
-		
+				//figure out which blocks we can select from
 				if (canHaveAG) {
 						if (Random.value < agChance) {
 								availableBlocks.Add (1);
@@ -249,21 +255,16 @@ public class CreateChunk : MonoBehaviour
 						}
 				}
 		
-								
-				
-				
-				
 				
 				if (availableBlocks.Count == 0) {
 			
 						blockNum = 0;
 			
 				} else {
-				
+						//choose a block from the selection
 						blockNum = availableBlocks [Random.Range (0, availableBlocks.Count - 1)];
-				
-				}
-				
+								}
+				//make the different types of blocks, set up relationships, scale colour and sprites
 				switch (blockNum) {
 				 
 				case 1:
@@ -380,6 +381,7 @@ public class CreateChunk : MonoBehaviour
 		
 		}
 		
+		//a minimal setup for sprites attached to special blocks
 		void setUpSpritesSpecial (Transform block)
 		{
 				//get the sprite plane attatched to the block
@@ -407,6 +409,7 @@ public class CreateChunk : MonoBehaviour
 				}
 		}
 		
+		//setup all the sprites on a block. 
 		void setUpSprites (Transform block, Color shade)
 		{
 		
@@ -414,6 +417,7 @@ public class CreateChunk : MonoBehaviour
 				//get the sprite plane attatched to the block
 				foreach (Transform childSprite in  block) {
 						
+						//Read values from a helper script  that sits on each sprite object
 						SpriteSettings spriteSettings = childSprite.GetComponent<SpriteSettings> ();
 						
 						//should the sprite appear?
@@ -456,13 +460,13 @@ public class CreateChunk : MonoBehaviour
 		// Update is called once per frame
 		void Update ()
 		{
-
+				//keep making blokcs if we don't have enough
 				if (blocksCreated < numberOfBlocks) {
 					
-						//make sure the ssed is the same every time we generate
+						//make sure the seed is the same every time we generate
 						Random.seed = savedSeed + blocksCreated;
 		
-						//make only the expected number of blocks per frame(update)
+						//make only the expected number of blocks per frame(update). should be a low number
 						for (int i = 1; i <= blocksPerFrame; i++) {
 								Vector3 scale = new Vector3 (
 										Random.Range (minSize.x, maxSize.x),
@@ -470,8 +474,9 @@ public class CreateChunk : MonoBehaviour
 										Random.Range (minSize.z, maxSize.z));
 										
 								Vector3 position = new Vector3 (fieldSize.x * Random.Range (-1f, 1f), fieldSize.y * Random.Range (-1f, 1f), 0f);
-								//transform to  position of chunk
 								
+								
+								//if we are making a mesa make it first and make it huge
 								if (mesa) {
 								
 										scale = new Vector3 (
@@ -486,7 +491,7 @@ public class CreateChunk : MonoBehaviour
 								}
 								
 								
-								
+								//transform to  position of chunk
 								position = position + transform.position;
 								
 								blocksCreated++;
@@ -500,6 +505,7 @@ public class CreateChunk : MonoBehaviour
 												
 										}
 								}
+								//if we have to make a stone circle
 								if (circle) {
 										if ((Physics.CheckSphere (position, scale.magnitude / 3f) == false) && ((Vector3.Distance (position, transform.position) < 50f) == false)) {
 												count++;
