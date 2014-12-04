@@ -6,17 +6,21 @@ using System.Collections.Generic;
 
 public class ChunkManager : MonoBehaviour
 {
-
-	
+		//load up the various types of chunk
 		public GameObject sparseSmall;
 		public GameObject sparseBig;
 		public GameObject denseSmall;
 		public GameObject denseBig;
+		//the player gameObject
 		public GameObject Player;
+		
+		//how far the player has to be from a chunk before it unloads. Should be about 200
 		public float maxDistance;
 		
+		//seed for generating random things
 		private float seed;
 		
+		//a list of all chunks stored by their co-ordinates
 		private Dictionary<string, Chunk> allChunks = new Dictionary<string, Chunk> ();
 		
 		// Use this for initialization
@@ -25,7 +29,7 @@ public class ChunkManager : MonoBehaviour
 				//get seed from global seed
 				seed = GlobalStuff.Seed;
 				
-				//make first 9 chunbks
+				//make first 9 chunbks around the player
 				allChunks.Add ("0,0", new Chunk (0, 0, seed, sparseSmall, sparseBig, denseSmall, denseBig));
 				allChunks.Add ("1,0", new Chunk (1, 0, seed, sparseSmall, sparseBig, denseSmall, denseBig));
 				allChunks.Add ("0,1", new Chunk (0, 1, seed, sparseSmall, sparseBig, denseSmall, denseBig));
@@ -56,6 +60,7 @@ public class ChunkManager : MonoBehaviour
 				{
 						
 						
+						//use the perlin noise function to determine what the denisty (blocks per chunk) and size (scale mulktipler) of the chunk should be
 						float density = Mathf.PerlinNoise (IndexToWorld (xCoord) / 1000f + seed, IndexToWorld (yCoord) / 1000f + seed);
 						float size = Mathf.PerlinNoise (IndexToWorld (xCoord) / 1000f + (seed * 2f), IndexToWorld (yCoord) / 1000f + (seed * 2f));
 						
@@ -66,7 +71,7 @@ public class ChunkManager : MonoBehaviour
 						this.yIndex = yCoord;
 						
 						
-						
+						//combinations of size and density give different chunk types
 						if (size < 0.5f & density < 0.5f) {
 								
 								this.field = (GameObject)Instantiate (sparseSmall, new Vector3 (IndexToWorld (xCoord), IndexToWorld (yCoord), 0f), Quaternion.identity);
@@ -94,6 +99,8 @@ public class ChunkManager : MonoBehaviour
 				
 	
 		}
+		
+		//indoex space in where a chunk takes up an area of size 1 x 1
 		
 		//Transform from index space to world space
 		static float IndexToWorld (int index)
