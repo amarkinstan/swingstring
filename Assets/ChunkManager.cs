@@ -61,8 +61,10 @@ public class ChunkManager : MonoBehaviour
 						
 						
 						//use the perlin noise function to determine what the denisty (blocks per chunk) and size (scale mulktipler) of the chunk should be
-						float density = Mathf.PerlinNoise (IndexToWorld (xCoord) / 1000f + seed, IndexToWorld (yCoord) / 1000f + seed);
-						float size = Mathf.PerlinNoise (IndexToWorld (xCoord) / 1000f + (seed * 2f), IndexToWorld (yCoord) / 1000f + (seed * 2f));
+						float density = GlobalStuff.getDensity (IndexToWorld (xCoord), IndexToWorld (yCoord), seed);
+						//Mathf.PerlinNoise (IndexToWorld (xCoord) / 1000f + seed, IndexToWorld (yCoord) / 1000f + seed);
+						float size = GlobalStuff.getSize (IndexToWorld (xCoord), IndexToWorld (yCoord), seed);
+						//Mathf.PerlinNoise (IndexToWorld (xCoord) / 1000f + (seed * 2f), IndexToWorld (yCoord) / 1000f + (seed * 2f));
 						
 						print ("desnity: " + density);
 						print ("size: " + size);

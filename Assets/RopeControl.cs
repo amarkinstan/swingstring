@@ -371,9 +371,10 @@ public class RopeControl : MonoBehaviour
 						}
 						anchorBendObject = (GameObject)Instantiate (ropeBend);
 						anchorBendObject.transform.position = anchorPoint;
-						player.renderer.material.color = hit.transform.renderer.material.color;
-						Color trail = hit.transform.renderer.material.color;
-						trail = Color.Lerp (trail, Color.white, 0.5f);
+						
+						GlobalStuff.LastColour = hit.transform.renderer.material.color;
+						player.renderer.material.color = GlobalStuff.LastColour;
+						Color trail = Color.Lerp (GlobalStuff.LastColour, Color.white, 0.5f);
 						player.GetComponent<TrailRenderer> ().material.SetColor ("_Color", trail);
 						
 						return true;

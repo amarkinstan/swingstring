@@ -72,7 +72,7 @@ public class SpeedBar : MonoBehaviour
 						transform.localScale = new Vector3 (transform.localScale.x, Mathf.Lerp (transform.localScale.y, size, 0.5f), 1f);
 				}
 				
-				colour = player.renderer.material.color;
+				colour = GlobalStuff.LastColour;
 				colour = new Color (colour.r, colour.g, colour.b, 1f);
 				colour = Color.Lerp (colour, Color.black, 0.6f);
 				guiTexture.color = colour;

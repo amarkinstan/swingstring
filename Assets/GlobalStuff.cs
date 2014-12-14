@@ -6,6 +6,8 @@ public class GlobalStuff : MonoBehaviour
 
 		public static float Seed;
 		public static Vector3 Gravity;
+		public static Color LastColour;
+		
 		// Use this for initialization
 		void Start ()
 		{
@@ -15,6 +17,18 @@ public class GlobalStuff : MonoBehaviour
 	
 		}
 	
-		// Update is called once per frame
+		public static float getDensity (float xCoord, float yCoord, float seed)
+		{
+		
+				return Mathf.PerlinNoise (xCoord / 1000f + seed, yCoord / 1000f + seed);
+		
+		}
+		
+		public static float getSize (float xCoord, float yCoord, float seed)
+		{
+		
+				return Mathf.PerlinNoise (xCoord / 1000f + (seed * 2f), yCoord / 1000f + (seed * 2f));
+		
+		}
 		
 }

@@ -118,8 +118,10 @@ public class CreateChunk : MonoBehaviour
 				Random.seed = (int)savedSeed;
 				
 				//find the density and size
-				density = Mathf.PerlinNoise (transform.position.x / 1000f + seed, transform.position.y / 1000f + seed);
-				size = Mathf.PerlinNoise (transform.position.x / 1000f + (seed * 2f), transform.position.y / 1000f + (seed * 2f));
+				density = GlobalStuff.getDensity (transform.position.x, transform.position.y, seed);
+				//Mathf.PerlinNoise (transform.position.x / 1000f + seed, transform.position.y / 1000f + seed);
+				size = GlobalStuff.getSize (transform.position.x, transform.position.y, seed);
+				//Mathf.PerlinNoise (transform.position.x / 1000f + (seed * 2f), transform.position.y / 1000f + (seed * 2f));
 				//make size effect scale
 				size = size * 2f;
 				//print ("desnity: " + density);
@@ -263,7 +265,7 @@ public class CreateChunk : MonoBehaviour
 				} else {
 						//choose a block from the selection
 						blockNum = availableBlocks [Random.Range (0, availableBlocks.Count - 1)];
-								}
+				}
 				//make the different types of blocks, set up relationships, scale colour and sprites
 				switch (blockNum) {
 				 
