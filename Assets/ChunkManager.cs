@@ -105,7 +105,7 @@ public class ChunkManager : MonoBehaviour
 		//indoex space in where a chunk takes up an area of size 1 x 1
 		
 		//Transform from index space to world space
-		static float IndexToWorld (int index)
+		public static float IndexToWorld (int index)
 		{
 			
 				return  ((float)index) * 100f;
@@ -113,7 +113,7 @@ public class ChunkManager : MonoBehaviour
 		}
 		
 		//Transform from world space to index space
-		static int WorldToIndex (float world)
+		public static int WorldToIndex (float world)
 		{
 			
 				float top = Mathf.Ceil (world / 100f);
