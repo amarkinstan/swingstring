@@ -47,9 +47,11 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\BlockBounce.cs" />
+     <Compile Include="Assets\ButtonSetup.cs" />
      <Compile Include="Assets\CameraZoom.cs" />
      <Compile Include="Assets\CellManager.cs" />
      <Compile Include="Assets\ChunkManager.cs" />
+     <Compile Include="Assets\ContainerSetup.cs" />
      <Compile Include="Assets\CreateChunk.cs" />
      <Compile Include="Assets\GlobalStuff.cs" />
      <Compile Include="Assets\HUDFPS.cs" />
@@ -62,7 +64,6 @@
      <Compile Include="Assets\SpriteSettings.cs" />
      <Compile Include="Assets\SpriteSettingsSpecial.cs" />
      <Compile Include="Assets\TerminalVelocity.cs" />
-     <Compile Include="Assets\TitleSetup.cs" />
      <Compile Include="Assets\setupField.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>

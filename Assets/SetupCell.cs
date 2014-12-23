@@ -41,7 +41,7 @@ public class SetupCell : MonoBehaviour
 	
 	
 		// Update is called once per frame
-		void Update ()
+		void OnEnable ()
 		{
 	
 				xPos = startXPos + ChunkManager.WorldToIndex (player.transform.position.x);
@@ -72,6 +72,8 @@ public class SetupCell : MonoBehaviour
 								thisImage.color = special;
 						}
 				}
+				
+				transform.localRotation = Quaternion.identity;
 	
 		}
 }
