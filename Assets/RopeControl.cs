@@ -396,7 +396,7 @@ public class RopeControl : MonoBehaviour
 				}
 				
 				//Make the rope with left click
-				if ((Input.GetButtonDown ("Attach + Pull")) == true && attatched == false) {
+				if ((Input.GetButtonDown ("Attach + Pull")) == true && attatched == false && GlobalStuff.Paused == false) {
 						if (isAnchored ()) {
 								Ropes = new List<Rope> ();
 								Ropes.Add (new Rope (anchorPoint, player.transform.position, ropeBend));
@@ -409,12 +409,12 @@ public class RopeControl : MonoBehaviour
 						}
 				}
 				//Retract Rope
-				if ((Input.GetButton ("Attach + Pull")) == true && attatched == true) {
+				if ((Input.GetButton ("Attach + Pull")) == true && attatched == true && GlobalStuff.Paused == false) {
 						//Retract the first rope
 						Ropes [0].Retract (retractSpeed * Time.deltaTime);
 				}
 				//Detach
-				if ((Input.GetButtonDown ("Dettach") == true) && attatched == true) {
+				if ((Input.GetButtonDown ("Dettach") == true) && attatched == true && GlobalStuff.Paused == false) {
 						//delete all ropeJoints
 						attatched = false;
 						foreach (Rope itemRope in Ropes) {

@@ -27,7 +27,7 @@ public class ChunkManager : MonoBehaviour
 		void Start ()
 		{
 				//get seed from global seed
-				seed = GlobalStuff.Seed;
+				seed = GlobalStore.Seed;
 				
 				//make first 9 chunbks around the player
 				allChunks.Add ("0,0", new Chunk (0, 0, seed, sparseSmall, sparseBig, denseSmall, denseBig));

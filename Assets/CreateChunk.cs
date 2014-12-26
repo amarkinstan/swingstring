@@ -110,7 +110,7 @@ public class CreateChunk : MonoBehaviour
 		{
 				
 				//get seed from global seed
-				seed = GlobalStuff.Seed;
+				seed = GlobalStore.Seed;
 				
 				//get the seed at this position, needed for prooer terrain generation
 				savedSeed = (int)(Mathf.PerlinNoise (transform.position.x / 1000f + 0.01f, transform.position.y / 1000f + 0.01f) * 1000000 + seed);

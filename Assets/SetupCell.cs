@@ -34,22 +34,22 @@ public class SetupCell : MonoBehaviour
 	
 				player = GameObject.Find ("Player");
 				thisImage = GetComponent<Image> ();
-	
+				EventManager.GamePause += GamePause;
 	
 		}
 	
 	
 	
 		// Update is called once per frame
-		void OnEnable ()
+		void GamePause ()
 		{
 	
 				xPos = startXPos + ChunkManager.WorldToIndex (player.transform.position.x);
 				yPos = startYPos + ChunkManager.WorldToIndex (player.transform.position.y);
 				
-				density = GlobalStuff.getDensity (ChunkManager.IndexToWorld (xPos), ChunkManager.IndexToWorld (yPos), GlobalStuff.Seed);
+				density = GlobalStuff.getDensity (ChunkManager.IndexToWorld (xPos), ChunkManager.IndexToWorld (yPos), GlobalStore.Seed);
 		
-				size = GlobalStuff.getSize (ChunkManager.IndexToWorld (xPos), ChunkManager.IndexToWorld (yPos), GlobalStuff.Seed);
+				size = GlobalStuff.getSize (ChunkManager.IndexToWorld (xPos), ChunkManager.IndexToWorld (yPos), GlobalStore.Seed);
 				
 				if (size < 0.5f & density < 0.5f) {
 						thisImage.color = desert;
@@ -74,6 +74,7 @@ public class SetupCell : MonoBehaviour
 				}
 				
 				transform.localRotation = Quaternion.identity;
+				transform.localScale = Vector3.one;
 	
 		}
 }
