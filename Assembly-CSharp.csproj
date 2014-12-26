@@ -61,6 +61,10 @@
      <Compile Include="Assets\GlobalStuff.cs" />
      <Compile Include="Assets\HUDFPS.cs" />
      <Compile Include="Assets\Hotkeys.cs" />
+     <Compile Include="Assets\PreGame_ButtonSetup.cs" />
+     <Compile Include="Assets\PreGame_ColoursToPick.cs" />
+     <Compile Include="Assets\PreGame_ContainerSetup.cs" />
+     <Compile Include="Assets\PreGame_Rope.cs" />
      <Compile Include="Assets\RopeControl.cs" />
      <Compile Include="Assets\SetupCell.cs" />
      <Compile Include="Assets\SlowField.cs" />

@@ -33,6 +33,7 @@ public class GlobalStuff : MonoBehaviour
 				
 				
 				Gravity = new Vector3 (0f, -6f, 0f);
+				Physics.gravity = Gravity;
 				EventManager.GamePause += GamePause;
 				EventManager.GameResume += GameResume;
 				
