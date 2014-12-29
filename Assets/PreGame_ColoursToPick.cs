@@ -24,10 +24,9 @@ public class PreGame_ColoursToPick : MonoBehaviour
 				colorSet.Add (c3);
 				colorSet.Add (c4);
 				
-				PreGame_ColoursToPick.shade = colorSet [Random.Range (0, 3)];
-				
-				
-	
+				PreGame_ColoursToPick.shade = colorSet [Random.Range (0, 4)];
+								
+				print (colorSet [0] + " " + colorSet [1] + " " + colorSet [2] + " " + colorSet [3]);
 	
 		}
 	

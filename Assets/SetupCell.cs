@@ -35,6 +35,7 @@ public class SetupCell : MonoBehaviour
 				player = GameObject.Find ("Player");
 				thisImage = GetComponent<Image> ();
 				EventManager.GamePause += GamePause;
+				GamePause ();
 	
 		}
 	

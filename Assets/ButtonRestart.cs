@@ -23,8 +23,17 @@ public class ButtonRestart : MonoBehaviour
 								GlobalStore.Seed = -GlobalStore.Seed;
 						}
 				}
-					
-				Application.LoadLevel ("ropebase"); 
+				print ("Ping1");	
+				StartCoroutine (LevelLoad ("ropebase"));
+				
 	
+		}
+		
+		IEnumerator LevelLoad (string name)
+		{
+				print ("Ping2");
+				yield return new WaitForSeconds (1f);
+				print ("Ping3");
+				Application.LoadLevel (name);
 		}
 }

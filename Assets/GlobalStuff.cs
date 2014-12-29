@@ -12,7 +12,7 @@ public class GlobalStuff : MonoBehaviour
 		public static Vector3 savedVelocity;
 		public Text seedText;
 		
-		Canvas canvas;
+		GameObject menu;
 		GameObject player;
 		TrailRenderer trail;
 		
@@ -37,7 +37,8 @@ public class GlobalStuff : MonoBehaviour
 				EventManager.GamePause += GamePause;
 				EventManager.GameResume += GameResume;
 				
-				canvas = GameObject.Find ("Canvas").GetComponent<Canvas> ();	
+				menu = GameObject.Find ("Menu");
+				menu.SetActive (false);
 				player = GameObject.Find ("Player");
 	
 		}
@@ -68,7 +69,7 @@ public class GlobalStuff : MonoBehaviour
 				TrailRenderer trail = player.GetComponent<TrailRenderer> ();
 				trail.time = 10f;
 		
-				canvas.enabled = false;
+				menu.SetActive (false);
 		
 		}
 		
@@ -83,7 +84,7 @@ public class GlobalStuff : MonoBehaviour
 				TrailRenderer trail = player.GetComponent<TrailRenderer> ();
 				trail.time = Mathf.Infinity;
 		
-				canvas.enabled = true;
+				menu.SetActive (true);
 		}
 		
 }
