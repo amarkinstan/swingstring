@@ -11,7 +11,7 @@ public class ButtonRestart : MonoBehaviour
 		public void ClickRestart ()
 		{
 				Physics.gravity = GlobalStuff.Gravity;
-				EventManager.TriggerGameRestart ();
+				
 				float number;
 				if (float.TryParse (seedText.text, out number)) {
 						GlobalStore.Seed = float.Parse (seedText.text);
@@ -24,6 +24,7 @@ public class ButtonRestart : MonoBehaviour
 						}
 				}
 				print ("Ping1");	
+				EventManager.TriggerGameRestart ();
 				StartCoroutine (LevelLoad ("ropebase"));
 				
 	

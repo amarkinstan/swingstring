@@ -10,7 +10,7 @@ public class ButtonSetup : MonoBehaviour
 		private Quaternion angle;
 		private Image picture;
 		
-		void Awake ()
+		void Start ()
 		{		
 		
 				EventManager.GamePause += GamePause;

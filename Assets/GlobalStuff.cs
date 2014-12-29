@@ -12,33 +12,39 @@ public class GlobalStuff : MonoBehaviour
 		public static Vector3 savedVelocity;
 		public Text seedText;
 		
-		GameObject menu;
+		CanvasGroup menu;
 		GameObject player;
 		TrailRenderer trail;
 		
 		// Use this for initialization
 		void Start ()
 		{		
+				EventManager.GamePause += GamePause;
+				EventManager.GameResume += GameResume;
+				
 				LastColour = Color.black;
 		
 				//more seed related stuff int he ButtonREstart Script
+				seedText.text = GlobalStore.Seed.ToString ();
 				if (GlobalStore.Seed == 0f) {
 						GlobalStore.Seed = (float)((int)(Random.value * 1000000f)) / 10f;
-						seedText.text = (GlobalStore.Seed * 10f).ToString ();
+						
+						seedText.text = GlobalStore.Seed.ToString ();
+						
 				} 
 				
-				seedText.text = GlobalStore.Seed.ToString ();
+				//seedText.text = GlobalStore.Seed.ToString ();
 				
 				Paused = false;
 				
 				
 				Gravity = new Vector3 (0f, -6f, 0f);
 				Physics.gravity = Gravity;
-				EventManager.GamePause += GamePause;
-				EventManager.GameResume += GameResume;
 				
-				menu = GameObject.Find ("Menu");
-				menu.SetActive (false);
+				
+				menu = GameObject.Find ("Menu").GetComponent<CanvasGroup> ();
+				menu.alpha = 0;
+				menu.interactable = false;
 				player = GameObject.Find ("Player");
 	
 		}
@@ -69,7 +75,8 @@ public class GlobalStuff : MonoBehaviour
 				TrailRenderer trail = player.GetComponent<TrailRenderer> ();
 				trail.time = 10f;
 		
-				menu.SetActive (false);
+				menu.alpha = 0;
+				menu.interactable = false;
 		
 		}
 		
@@ -84,7 +91,8 @@ public class GlobalStuff : MonoBehaviour
 				TrailRenderer trail = player.GetComponent<TrailRenderer> ();
 				trail.time = Mathf.Infinity;
 		
-				menu.SetActive (true);
+				menu.alpha = 1;
+				menu.interactable = true;
 		}
 		
 }
