@@ -46,34 +46,34 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\BlockBounce.cs" />
-     <Compile Include="Assets\ButtonQuit.cs" />
-     <Compile Include="Assets\ButtonRestart.cs" />
-     <Compile Include="Assets\ButtonResume.cs" />
-     <Compile Include="Assets\ButtonSetup.cs" />
-     <Compile Include="Assets\CameraZoom.cs" />
-     <Compile Include="Assets\CellManager.cs" />
-     <Compile Include="Assets\ChunkManager.cs" />
-     <Compile Include="Assets\ContainerSetup.cs" />
-     <Compile Include="Assets\CreateChunk.cs" />
-     <Compile Include="Assets\EventManager.cs" />
-     <Compile Include="Assets\GlobalStore.cs" />
-     <Compile Include="Assets\GlobalStuff.cs" />
-     <Compile Include="Assets\HUDFPS.cs" />
-     <Compile Include="Assets\Hotkeys.cs" />
-     <Compile Include="Assets\PreGame_ButtonSetup.cs" />
-     <Compile Include="Assets\PreGame_ColoursToPick.cs" />
-     <Compile Include="Assets\PreGame_ContainerSetup.cs" />
-     <Compile Include="Assets\PreGame_Rope.cs" />
-     <Compile Include="Assets\RopeControl.cs" />
-     <Compile Include="Assets\SetupCell.cs" />
-     <Compile Include="Assets\SlowField.cs" />
-     <Compile Include="Assets\SpeedBar.cs" />
-     <Compile Include="Assets\SpinnerCollision.cs" />
-     <Compile Include="Assets\SpriteSettings.cs" />
-     <Compile Include="Assets\SpriteSettingsSpecial.cs" />
-     <Compile Include="Assets\TerminalVelocity.cs" />
-     <Compile Include="Assets\setupField.cs" />
+     <Compile Include="Assets\Scripts\BlockBounce.cs" />
+     <Compile Include="Assets\Scripts\CameraZoom.cs" />
+     <Compile Include="Assets\Scripts\ChunkManager.cs" />
+     <Compile Include="Assets\Scripts\CreateChunk.cs" />
+     <Compile Include="Assets\Scripts\EventManager.cs" />
+     <Compile Include="Assets\Scripts\GlobalStore.cs" />
+     <Compile Include="Assets\Scripts\GlobalStuff.cs" />
+     <Compile Include="Assets\Scripts\Hotkeys.cs" />
+     <Compile Include="Assets\Scripts\RopeControl.cs" />
+     <Compile Include="Assets\Scripts\SlowField.cs" />
+     <Compile Include="Assets\Scripts\SpinnerCollision.cs" />
+     <Compile Include="Assets\Scripts\SpriteSettings.cs" />
+     <Compile Include="Assets\Scripts\SpriteSettingsSpecial.cs" />
+     <Compile Include="Assets\Scripts\TerminalVelocity.cs" />
+     <Compile Include="Assets\Scripts\UI\ButtonQuit.cs" />
+     <Compile Include="Assets\Scripts\UI\ButtonRestart.cs" />
+     <Compile Include="Assets\Scripts\UI\ButtonResume.cs" />
+     <Compile Include="Assets\Scripts\UI\CellManager.cs" />
+     <Compile Include="Assets\Scripts\UI\HUDFPS.cs" />
+     <Compile Include="Assets\Scripts\UI\PreGame_ButtonSetup.cs" />
+     <Compile Include="Assets\Scripts\UI\PreGame_ColoursToPick.cs" />
+     <Compile Include="Assets\Scripts\UI\PreGame_ContainerSetup.cs" />
+     <Compile Include="Assets\Scripts\UI\PreGame_Rope.cs" />
+     <Compile Include="Assets\Scripts\UI\SetupButton.cs" />
+     <Compile Include="Assets\Scripts\UI\SetupCell.cs" />
+     <Compile Include="Assets\Scripts\UI\SetupContainer.cs" />
+     <Compile Include="Assets\Scripts\UI\SpeedBar.cs" />
+     <Compile Include="Assets\Scripts\setupField.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
  </Reference>
