@@ -418,11 +418,11 @@ public class RopeControl : MonoBehaviour
 						//delete all ropeJoints
 						attatched = false;
 						foreach (Rope itemRope in Ropes) {
-								DestroyObject (itemRope.hasLine);
-								DestroyObject (itemRope.hasBend);
+								Destroy (itemRope.hasLine);
+								Destroy (itemRope.hasBend);
 						}
 						KillJoints ();
-						DestroyObject (anchorBendObject);
+						Destroy (anchorBendObject);
 						//Component.Destroy (player.GetComponent<ConfigurableJoint> ());
 				}
 		}

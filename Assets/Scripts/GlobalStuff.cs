@@ -25,6 +25,8 @@ public class GlobalStuff : MonoBehaviour
 		CanvasGroup menu;
 		GameObject player;
 		TrailRenderer trail;
+
+        private int BoomCOUNT = 0;
 		
 		// Use this for initialization
 		void Start ()
@@ -110,4 +112,16 @@ public class GlobalStuff : MonoBehaviour
 				menu.interactable = true;
 		}
 		
+        void Update ()
+        {
+
+
+            if (Time.unscaledDeltaTime > 0.017f)
+            {
+                BoomCOUNT++;
+                print("BOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOM "+BoomCOUNT);
+
+            }
+
+        }
 }

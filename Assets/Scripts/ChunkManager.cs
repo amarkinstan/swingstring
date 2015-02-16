@@ -71,8 +71,8 @@ public class ChunkManager : MonoBehaviour
             float size = GlobalStuff.getSize(IndexToWorld(xCoord), IndexToWorld(yCoord), seed);
             //Mathf.PerlinNoise (IndexToWorld (xCoord) / 1000f + (seed * 2f), IndexToWorld (yCoord) / 1000f + (seed * 2f));
 
-            print("desnity: " + density);
-            print("size: " + size);
+            //print("desnity: " + density);
+            //print("size: " + size);
 
             this.xIndex = xCoord;
             this.yIndex = yCoord;
@@ -161,7 +161,7 @@ public class ChunkManager : MonoBehaviour
                 {
 
                     allChunks.Add(tempX + "," + tempY, new Chunk(currentX + q, currentY + p, seed, sparseSmall, sparseBig, denseSmall, denseBig));
-
+                    //print("MAKE1");
 
                 }
             }
@@ -183,15 +183,15 @@ public class ChunkManager : MonoBehaviour
             }
             if (allChunks[entry].deleting == true && allChunks[entry].field.transform.childCount != 0)
             {
-
+                //print("smalldelete");
                 child = allChunks[entry].field.transform.GetChild(0);
-                DestroyObject(child.gameObject);
-
+                Destroy(child.gameObject);
+                
             }
             if (allChunks[entry].deleting == true && allChunks[entry].field.transform.childCount == 0)
             {
-
-                DestroyObject(allChunks[entry].field);
+                //print("BIGdelete");
+                Destroy(allChunks[entry].field);
 
                 allChunks[entry].deleting = false;
 

@@ -53,7 +53,11 @@
      <Compile Include="Assets\Scripts\EventManager.cs" />
      <Compile Include="Assets\Scripts\GlobalStore.cs" />
      <Compile Include="Assets\Scripts\GlobalStuff.cs" />
+     <Compile Include="Assets\Scripts\Gravity.cs" />
+     <Compile Include="Assets\Scripts\Ground.cs" />
      <Compile Include="Assets\Scripts\Hotkeys.cs" />
+     <Compile Include="Assets\Scripts\Killzone.cs" />
+     <Compile Include="Assets\Scripts\Preload.cs" />
      <Compile Include="Assets\Scripts\RopeControl.cs" />
      <Compile Include="Assets\Scripts\SlowField.cs" />
      <Compile Include="Assets\Scripts\SpinnerCollision.cs" />

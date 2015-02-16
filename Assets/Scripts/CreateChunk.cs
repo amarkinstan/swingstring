@@ -75,12 +75,16 @@ public class CreateChunk : MonoBehaviour
 																				
 		//number of blocks in field
 		public int numberOfBlocks;
+
 		//number of frames to  generate every frame
 		public int blocksPerFrame;
+
 		//how many blocks we have made so far
 		private int blocksCreated;
+
 		//size range for blocks - affected by size perlin
 		public Vector3 minSize, maxSize;
+
 		//extent of field should be 100
 		public Vector2 fieldSize;
 		
@@ -145,7 +149,7 @@ public class CreateChunk : MonoBehaviour
 				//make density effet number of blocks, there must be at least soe blocks in the chunk
 				numberOfBlocks = 3 + (int)(numberOfBlocks * density);
 				
-				print ("number of blocks " + numberOfBlocks);
+				//print ("number of blocks " + numberOfBlocks);
 				
 				//setup empty distribution
 				if (canBeEmpty) {
