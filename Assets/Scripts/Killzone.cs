@@ -5,6 +5,8 @@ public class Killzone : MonoBehaviour {
 
     public float factor;
 
+    public float acceleration;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -13,9 +15,30 @@ public class Killzone : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        float scaling = 1f + (Time.deltaTime * factor * (1f / (1f+(Time.timeSinceLevelLoad*0.1f))));
+        GlobalStuff.DarkSpeed = 0f;
 
-        transform.localScale = new Vector3(transform.localScale.x * scaling, 5f, transform.localScale.z * scaling);
+        if (GlobalStuff.isDead == false)
+        {
+
+            float scaling = Time.deltaTime * factor;
+
+            scaling = scaling + (acceleration * Time.timeSinceLevelLoad * Time.deltaTime);
+
+            if (scaling * (1 / Time.deltaTime) > 61f)
+            {
+
+                scaling = 61f / (1 / Time.deltaTime);
+
+            }
+
+            GlobalStuff.DarkSpeed = scaling * (1 / Time.deltaTime);
+
+            //print("increase per second =" + GlobalStuff.DarkSpeed);
+
+            transform.localScale = new Vector3(transform.localScale.x + scaling, 10f, transform.localScale.z + scaling);
+        }
+
+        
 	
 	}
 }

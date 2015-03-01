@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\CameraZoom.cs" />
      <Compile Include="Assets\Scripts\ChunkManager.cs" />
      <Compile Include="Assets\Scripts\CreateChunk.cs" />
+     <Compile Include="Assets\Scripts\Death.cs" />
      <Compile Include="Assets\Scripts\EventManager.cs" />
      <Compile Include="Assets\Scripts\GlobalStore.cs" />
      <Compile Include="Assets\Scripts\GlobalStuff.cs" />

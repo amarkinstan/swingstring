@@ -6,6 +6,11 @@ using UnityEngine.UI;
 //Used to hold all the global variables and behaviours in a scene
 public class GlobalStuff : MonoBehaviour
 {
+        //Where a player spawns
+        public GameObject RespawnPoint;
+
+        //speed of darkness
+        public static float DarkSpeed;
 
 		//what gravity normally is
 		public static Vector3 Gravity;
@@ -15,6 +20,9 @@ public class GlobalStuff : MonoBehaviour
 		
 		//Is the game pasued
 		public static bool Paused;
+
+        //Is the player Dead
+        public static bool isDead;
 		
 		//The valocity of the player at pause
 		public static Vector3 savedVelocity;
@@ -30,8 +38,11 @@ public class GlobalStuff : MonoBehaviour
 		
 		// Use this for initialization
 		void Start ()
-		{		
-				EventManager.GamePause += GamePause;
+		{
+                player = GameObject.Find("Player");
+                
+                EventManager.GamePause += GamePause;
+                EventManager.PlayerDeath += PlayerDeath;
 				EventManager.GameResume += GameResume;
 				
 				//when there is no last colour set it to be black
@@ -51,6 +62,9 @@ public class GlobalStuff : MonoBehaviour
 				
 				// dont start paused
 				Paused = false;
+
+                //don't start dead
+                isDead = false;
 				
 				//set inital gravity
 				Gravity = new Vector3 (0f, -6f, 0f);
@@ -60,7 +74,7 @@ public class GlobalStuff : MonoBehaviour
 				menu = GameObject.Find ("Menu").GetComponent<CanvasGroup> ();
 				menu.alpha = 0;
 				menu.interactable = false;
-				player = GameObject.Find ("Player");
+				
 	
 		}
 	
@@ -84,8 +98,9 @@ public class GlobalStuff : MonoBehaviour
 		{
 		
 				Paused = false;
-		
-		
+
+                
+
 				player.rigidbody.isKinematic = false;
 				player.rigidbody.AddForce (GlobalStuff.savedVelocity, ForceMode.VelocityChange);
 		
@@ -100,6 +115,8 @@ public class GlobalStuff : MonoBehaviour
 		void GamePause ()
 		{
 				Paused = true;
+
+                
 		
 				GlobalStuff.savedVelocity = player.rigidbody.velocity;
 				player.rigidbody.isKinematic = true;
@@ -111,6 +128,18 @@ public class GlobalStuff : MonoBehaviour
 				menu.alpha = 1;
 				menu.interactable = true;
 		}
+
+        void PlayerDeath()
+        {
+
+            isDead = true;
+
+                player.rigidbody.isKinematic = true;
+
+                TrailRenderer trail = player.GetComponent<TrailRenderer>();
+                trail.time = Mathf.Infinity;
+
+        }
 		
         void Update ()
         {
