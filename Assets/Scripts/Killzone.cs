@@ -17,7 +17,7 @@ public class Killzone : MonoBehaviour {
 
         GlobalStuff.DarkSpeed = 0f;
 
-        if (GlobalStuff.isDead == false)
+        if (GlobalStuff.isDead == false && GlobalStuff.Paused == false)
         {
 
             float scaling = Time.deltaTime * factor;

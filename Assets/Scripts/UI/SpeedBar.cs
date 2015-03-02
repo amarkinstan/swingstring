@@ -8,6 +8,7 @@ public class SpeedBar : MonoBehaviour
     //The player object
     public GameObject player;
 
+    //are we tracking the player or the darkness?
     public bool isPlayer;
 
 
@@ -20,13 +21,9 @@ public class SpeedBar : MonoBehaviour
     public bool Left;
     public bool Right;
 
-    //how many frames should we get a movign average over? (more looks smoother)
-    public int framesToAverage;
-
-    //list of the speeds at each frame
-    private List<float> speeds = new List<float>();
-
-    private float average;
+    
+    //seped of the thing we are tracking
+    private float speed;
 
 
 
@@ -39,37 +36,27 @@ public class SpeedBar : MonoBehaviour
 
         if (isPlayer)
         {
-            speeds.Add(player.rigidbody.velocity.magnitude);
+            speed = GlobalStuff.AveragePlayerSpeed;
 
         }
         else
         {
 
-            speeds.Add(GlobalStuff.DarkSpeed);
+            speed = GlobalStuff.DarkSpeed;
         }
 
 
-        //remove the speed at teh end if the list is full
-        if (speeds.Count > framesToAverage)
-        {
-
-            speeds.RemoveAt(0);
-
-        }
-
-        //get the average speed
-        average = speeds.Average();
 
 
-        //set the size of the bar based on average speed (based on 60 being top speed)
+        //set the size of the bar based on speed speed (based on 60 being top speed)
 
         if (Bot)
         {
-            transform.localScale = new Vector3(Mathf.Lerp(transform.localScale.x, (average / (9.8f)), 0.5f), transform.localScale.y, 1f);
+            transform.localScale = new Vector3(Mathf.Lerp(transform.localScale.x, (speed / (9.8f)), 0.5f), transform.localScale.y, 1f);
         }
         if (Top)
         {
-            float size = (average / (9.8f)) - 3.125f;
+            float size = (speed / (9.8f)) - 3.125f;
             if (size < 0f)
             {
                 size = 0f;
@@ -78,7 +65,7 @@ public class SpeedBar : MonoBehaviour
         }
         if (Right)
         {
-            float size = (average / (5.4f)) - 3.623f;
+            float size = (speed / (5.4f)) - 3.623f;
 
             if (size < 0f)
             {
@@ -89,7 +76,7 @@ public class SpeedBar : MonoBehaviour
         }
         if (Left)
         {
-            float size = ((average / (5.4f)) - 9.375f) * 1.1428f;
+            float size = ((speed / (5.4f)) - 9.375f) * 1.1428f;
 
             if (size < 0f)
             {

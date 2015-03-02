@@ -1,11 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 
 //Used to hold all the global variables and behaviours in a scene
 public class GlobalStuff : MonoBehaviour
 {
+            
+
+        //score multiplier
+        public static float Multi;
+
+        //Score
+        public static float Score;
+
+        //time since the pl;ayer last ran into something
+        public static float TimeSinceLastCollision;
+    
         //Where a player spawns
         public GameObject RespawnPoint;
 
@@ -29,24 +42,46 @@ public class GlobalStuff : MonoBehaviour
 		
 		//WHere the seed is shown
 		public Text seedText;
+
+        //WHere the Score is shown
+        public Text scoreText;
+
+        //WHere the muli is shown
+        public Text multiText;
+
+        //staring menu color
+        public Color startingColour;
+
+        //how many frames should we get a movign average over? (more looks smoother)
+        public int framesToAverage;
 		
 		CanvasGroup menu;
 		GameObject player;
 		TrailRenderer trail;
 
         private int BoomCOUNT = 0;
+
+        //average speed of the player of last x frames
+        public static float AveragePlayerSpeed;
+
+
+        //list of player speeds for a moving average;
+        private List<float> speeds = new List<float>();
 		
 		// Use this for initialization
 		void Start ()
 		{
+
                 player = GameObject.Find("Player");
+
+                TimeSinceLastCollision = 0f;
                 
                 EventManager.GamePause += GamePause;
                 EventManager.PlayerDeath += PlayerDeath;
 				EventManager.GameResume += GameResume;
 				
 				//when there is no last colour set it to be black
-				LastColour = Color.black;
+				LastColour = startingColour;
 		
 				//more seed related stuff int he ButtonREstart Script
 				seedText.text = GlobalStore.Seed.ToString ();
@@ -143,7 +178,26 @@ public class GlobalStuff : MonoBehaviour
 		
         void Update ()
         {
+            if (Paused == false && isDead == false)
+            {
+                speeds.Add(player.rigidbody.velocity.magnitude);
 
+                TimeSinceLastCollision += Time.deltaTime;
+
+                //remove the speed at teh end if the list is full
+                if (speeds.Count > framesToAverage)
+                {
+
+                    speeds.RemoveAt(0);
+
+                }
+
+                AveragePlayerSpeed = speeds.Average();
+
+                scoreText.text = Score.ToString("0");
+
+                multiText.text = "× " + Multi.ToString("0.00");
+            }
 
             if (Time.unscaledDeltaTime > 0.017f)
             {
