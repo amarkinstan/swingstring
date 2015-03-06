@@ -8,12 +8,32 @@ using System.Linq;
 //Used to hold all the global variables and behaviours in a scene
 public class GlobalStuff : MonoBehaviour
 {
-            
+        //Variables that can be changed in the editor    
+        
+         //average speed of the player of last x frames
+        public static float AveragePlayerSpeed;
+        
+        //WHere the seed is shown
+	public Text seedText;
+	
+	//Where the Score is shown
+        public Text scoreText;
 
+        //Where the muli is shown
+        public Text multiText;
+        
+        //staring menu color
+        public Color startingColour;
+        
+        //how many frames should we get a movign average over? (more looks smoother)
+        public int framesToAverage;
+	
+	//GLobal static vars
+	
         //score multiplier
         public static float Multi;
 
-        //Score
+        //Score for escape level
         public static float Score;
 
         //time since the pl;ayer last ran into something
@@ -25,90 +45,88 @@ public class GlobalStuff : MonoBehaviour
         //speed of darkness
         public static float DarkSpeed;
 
-		//what gravity normally is
-		public static Vector3 Gravity;
-		
-		//the colour of th elast bloack attachetd to.
-		public static Color LastColour;
-		
-		//Is the game pasued
-		public static bool Paused;
+	//what gravity normally is
+	public static Vector3 Gravity;
+	
+	//the colour of th elast bloack attachetd to.
+	public static Color LastColour;
+	
+	//Is the game pasued
+	public static bool Paused;
 
         //Is the player Dead
         public static bool isDead;
 		
-		//The valocity of the player at pause
-		public static Vector3 savedVelocity;
-		
-		//WHere the seed is shown
-		public Text seedText;
+	//The valocity of the player at pause
+	public static Vector3 savedVelocity;
+	
+	//Internal vars
 
-        //WHere the Score is shown
-        public Text scoreText;
+        //The escape menu
+        private	CanvasGroup menu;
+	
+	//The player
+	private	GameObject player;
+	
+	//player trailrendere
+	private	TrailRenderer trail;
+	
+	//list of player speeds for a moving average;
+        private List<float> speeds = new List<float>();
 
-        //WHere the muli is shown
-        public Text multiText;
+        //Debug vars
 
-        //staring menu color
-        public Color startingColour;
-
-        //how many frames should we get a movign average over? (more looks smoother)
-        public int framesToAverage;
-		
-		CanvasGroup menu;
-		GameObject player;
-		TrailRenderer trail;
-
+        //How many times the game has stuttered since launch 
         private int BoomCOUNT = 0;
 
         //average speed of the player of last x frames
         public static float AveragePlayerSpeed;
 
 
-        //list of player speeds for a moving average;
-        private List<float> speeds = new List<float>();
+        
 		
 		// Use this for initialization
 		void Start ()
 		{
-
+		// find the player
                 player = GameObject.Find("Player");
-
+		
+		//set time since last hit to 0 when we start
                 TimeSinceLastCollision = 0f;
                 
+                //add our methods to the event manager
                 EventManager.GamePause += GamePause;
                 EventManager.PlayerDeath += PlayerDeath;
-				EventManager.GameResume += GameResume;
-				
-				//when there is no last colour set it to be black
-				LastColour = startingColour;
+		EventManager.GameResume += GameResume;
 		
-				//more seed related stuff int he ButtonREstart Script
+		//when there is no last colour set it to be what we the user said
+		LastColour = startingColour;
+
+		//more seed related stuff int he ButtonREstart Script
+		seedText.text = GlobalStore.Seed.ToString ();
+				
+		//if we don't have a seed make a random one
+		if (GlobalStore.Seed == 0f) {
+				GlobalStore.Seed = (float)((int)(Random.value * 1000000f)) / 10f;
 				seedText.text = GlobalStore.Seed.ToString ();
 				
-				//if we don't have a seed make a random one
-				if (GlobalStore.Seed == 0f) {
-						GlobalStore.Seed = (float)((int)(Random.value * 1000000f)) / 10f;
-						
-						seedText.text = GlobalStore.Seed.ToString ();
-						
-				} 
+		} 
 				
 				
-				// dont start paused
-				Paused = false;
+		// dont start paused
+		Paused = false;
 
                 //don't start dead
                 isDead = false;
 				
-				//set inital gravity
-				Gravity = new Vector3 (0f, -6f, 0f);
-				Physics.gravity = Gravity;
-				
-				//menu shoudl start hidden
-				menu = GameObject.Find ("Menu").GetComponent<CanvasGroup> ();
-				menu.alpha = 0;
-				menu.interactable = false;
+		//set inital gravity
+		Gravity = new Vector3 (0f, -6f, 0f);
+		Physics.gravity = Gravity;
+		
+		//menu should start hidden
+		menu = GameObject.Find ("Menu").GetComponent<CanvasGroup> ();
+		menu.alpha = 0;
+		menu.interactable = false;
 				
 	
 		}
@@ -134,8 +152,6 @@ public class GlobalStuff : MonoBehaviour
 		
 				Paused = false;
 
-                
-
 				player.rigidbody.isKinematic = false;
 				player.rigidbody.AddForce (GlobalStuff.savedVelocity, ForceMode.VelocityChange);
 		
@@ -151,8 +167,6 @@ public class GlobalStuff : MonoBehaviour
 		{
 				Paused = true;
 
-                
-		
 				GlobalStuff.savedVelocity = player.rigidbody.velocity;
 				player.rigidbody.isKinematic = true;
 		
@@ -164,6 +178,7 @@ public class GlobalStuff : MonoBehaviour
 				menu.interactable = true;
 		}
 
+        //what happens when the player dies?
         void PlayerDeath()
         {
 
@@ -178,27 +193,32 @@ public class GlobalStuff : MonoBehaviour
 		
         void Update ()
         {
+            //if the game is runnign
             if (Paused == false && isDead == false)
             {
+                //record player speed for moving average
                 speeds.Add(player.rigidbody.velocity.magnitude);
 
+		//increment the time sine last collision
                 TimeSinceLastCollision += Time.deltaTime;
 
-                //remove the speed at teh end if the list is full
+                //remove the speed at the end if the list is full
                 if (speeds.Count > framesToAverage)
                 {
-
                     speeds.RemoveAt(0);
-
                 }
 
+                //get the current average speed
                 AveragePlayerSpeed = speeds.Average();
 
+		//set the score UI element with the correct string format
                 scoreText.text = Score.ToString("0");
 
+		//set the multiplier UI element with the correct string format
                 multiText.text = "× " + Multi.ToString("0.00");
             }
 
+	// find stutters
             if (Time.unscaledDeltaTime > 0.017f)
             {
                 BoomCOUNT++;
