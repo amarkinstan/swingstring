@@ -29,7 +29,7 @@ public class ButtonRestart : MonoBehaviour
 				
 				//clear statics that need to be cleared, then load game
 				EventManager.TriggerGameRestart ();
-				StartCoroutine (LevelLoad ("ropebase"));
+				StartCoroutine (LevelLoad (Application.loadedLevelName));
 				
 	
 		}
