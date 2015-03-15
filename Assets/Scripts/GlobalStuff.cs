@@ -10,6 +10,7 @@ public class GlobalStuff : MonoBehaviour
 {
     //Variables that can be changed in the editor    
 
+       
     //average speed of the player of last x frames
     public static float AveragePlayerSpeed;
 
@@ -93,15 +94,20 @@ public class GlobalStuff : MonoBehaviour
         //set time since last hit to 0 when we start
         TimeSinceLastCollision = 0f;
 
+        //reset score and mulktiper
+        Score = 0f;
+        Multi = 0f;
+
         //add our methods to the event manager
         EventManager.GamePause += GamePause;
         EventManager.PlayerDeath += PlayerDeath;
         EventManager.GameResume += GameResume;
+        EventManager.GameRestart += GameRestart;
 
         //when there is no last colour set it to be what we the user said
         LastColour = startingColour;
 
-        //more seed related stuff int he ButtonREstart Script
+        //seed from textbox
         seedText.text = GlobalStore.Seed.ToString();
 
         //if we don't have a seed make a random one
@@ -144,6 +150,31 @@ public class GlobalStuff : MonoBehaviour
 
         return Mathf.PerlinNoise(xCoord / 1000f + (seed * 2f), yCoord / 1000f + (seed * 2f));
 
+    }
+
+    //what happens when restart is pressed
+    void GameRestart()
+    {
+        //make sure no gravity effects are happening
+        Physics.gravity = Gravity;
+        
+        //if the seedtext is a number, set the global seed as that
+        float number;
+        if (float.TryParse(seedText.text, out number))
+        {
+            GlobalStore.Seed = float.Parse(seedText.text);
+
+        }
+        else
+        {
+            GlobalStore.Seed = seedText.text.GetHashCode();
+
+            if (GlobalStore.Seed < 0f)
+            {
+                GlobalStore.Seed = -GlobalStore.Seed;
+            }
+        }
+        print("CHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"+GlobalStore.Seed);
     }
 
     //what happens on resume

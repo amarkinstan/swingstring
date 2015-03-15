@@ -8,7 +8,7 @@ public static class EventManager
 	
 		public delegate void GameEvent ();
 	
-		public static event GameEvent GamePause, GameResume, PlayerDeath;
+		public static event GameEvent GamePause, GameResume, PlayerDeath, GameRestart;
 
 		public static void TriggerGamePause ()
 		{
@@ -31,11 +31,15 @@ public static class EventManager
 						GameResume ();
 				}
 		}
+
 		
 		
 		public static void TriggerGameRestart ()
 		{
-				
+            if (GameRestart != null)
+            {
+                GameRestart();
+            }
 				GameResume = null;
 				GamePause = null;
                 PlayerDeath = null;

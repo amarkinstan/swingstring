@@ -317,7 +317,7 @@ public class RopeControl : MonoBehaviour
     }
 
     //Get the true angle between two lines, can return negatives
-    float AngleSigned(Vector3 v1, Vector3 v2, Vector3 n)
+    public static float AngleSigned(Vector3 v1, Vector3 v2, Vector3 n)
     {
         return Mathf.Atan2(
     Vector3.Dot(n, Vector3.Cross(v1, v2)),

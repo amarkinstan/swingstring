@@ -11,21 +11,7 @@ public class ButtonRestart : MonoBehaviour
 		//Called On click
 		public void ClickRestart ()
 		{
-				//make sure no gravity effects are happening
-				Physics.gravity = GlobalStuff.Gravity;
 				
-				//if the seedtext is a number, set the global seed as that
-				float number;
-				if (float.TryParse (seedText.text, out number)) {
-						GlobalStore.Seed = float.Parse (seedText.text);
-			
-				} else {
-						GlobalStore.Seed = seedText.text.GetHashCode ();
-						
-						if (GlobalStore.Seed < 0f) {
-								GlobalStore.Seed = -GlobalStore.Seed;
-						}
-				}
 				
 				//clear statics that need to be cleared, then load game
 				EventManager.TriggerGameRestart ();
