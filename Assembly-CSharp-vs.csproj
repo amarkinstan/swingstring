@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\BlockBounce.cs" />
+     <Compile Include="Assets\Scripts\Boundary.cs" />
      <Compile Include="Assets\Scripts\CameraZoom.cs" />
      <Compile Include="Assets\Scripts\ChunkManager.cs" />
      <Compile Include="Assets\Scripts\CreateChunk.cs" />
@@ -55,7 +56,6 @@
      <Compile Include="Assets\Scripts\GlobalStore.cs" />
      <Compile Include="Assets\Scripts\GlobalStuff.cs" />
      <Compile Include="Assets\Scripts\Gravity.cs" />
-     <Compile Include="Assets\Scripts\Ground.cs" />
      <Compile Include="Assets\Scripts\Hotkeys.cs" />
      <Compile Include="Assets\Scripts\Killzone.cs" />
      <Compile Include="Assets\Scripts\PlayerCollisionCheck.cs" />
@@ -71,11 +71,14 @@
      <Compile Include="Assets\Scripts\UI\ButtonRestart.cs" />
      <Compile Include="Assets\Scripts\UI\ButtonResume.cs" />
      <Compile Include="Assets\Scripts\UI\CellManager.cs" />
+     <Compile Include="Assets\Scripts\UI\DistanceMeter.cs" />
      <Compile Include="Assets\Scripts\UI\HUDFPS.cs" />
      <Compile Include="Assets\Scripts\UI\PreGame_ButtonSetup.cs" />
      <Compile Include="Assets\Scripts\UI\PreGame_ColoursToPick.cs" />
      <Compile Include="Assets\Scripts\UI\PreGame_ContainerSetup.cs" />
      <Compile Include="Assets\Scripts\UI\PreGame_Rope.cs" />
+     <Compile Include="Assets\Scripts\UI\ScoreText.cs" />
+     <Compile Include="Assets\Scripts\UI\SetTextColourToBg.cs" />
      <Compile Include="Assets\Scripts\UI\SetupButton.cs" />
      <Compile Include="Assets\Scripts\UI\SetupCell.cs" />
      <Compile Include="Assets\Scripts\UI\SetupContainer.cs" />

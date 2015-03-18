@@ -233,9 +233,55 @@ public class RopeControl : MonoBehaviour
 
         //Debug.DrawRay (hitCube.TransformPoint (corners [0]), hitCube.TransformDirection (diagDir), Color.white, 5000f);
 
-        return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * 0.0707f);
+        return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f));
 
     }
+
+    Vector3 FindClosestCorner(Vector3 lineStart, Vector3 lineEnd, Transform hitCube, float wireSize)
+    {
+
+        Vector3 centrePos;
+        float height;
+        float width;
+        List<Vector3> corners = new List<Vector3>();
+
+
+        centrePos = Vector3.zero;
+        height = hitCube.localScale.y;
+        width = hitCube.localScale.x;
+
+        width = width + wireSize;
+        height = height + wireSize;
+
+        
+        //topleft
+        corners.Add(new Vector3(centrePos.x + 0.5f, centrePos.y + 0.5f, 0f));
+        //topright
+        corners.Add(new Vector3(centrePos.x - 0.5f, centrePos.y + 0.5f, 0f));
+        //botleft
+        corners.Add(new Vector3(centrePos.x + 0.5f, centrePos.y - 0.5f, 0f));
+        //topleft
+        corners.Add(new Vector3(centrePos.x - 0.5f, centrePos.y - 0.5f, 0f));
+        //closest corner
+        corners = corners.OrderBy(vec3 => pointToLineDistance(lineStart, lineEnd, hitCube.TransformPoint(vec3))).ToList();
+
+        // move away by wireSize
+        Vector3 diagDir = Vector3.Normalize(new Vector3(corners[0].x, 0f, 0f)) + Vector3.Normalize(new Vector3(0f, corners[0].y, 0f));
+
+        Vector3.Normalize(diagDir);
+
+        //Debug.DrawRay (hitCube.TransformPoint (corners [0]), hitCube.TransformDirection (diagDir), Color.white, 5000f);
+
+        return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize/2f));
+                
+
+    }
+
+    float pointToLineDistance(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
+    {
+        return Vector3.Magnitude(Vector3.Cross((point - lineStart),(point - lineEnd)))/Vector3.Magnitude(lineEnd-lineStart);
+    }
+
 
     //have we retracted very close to the anchor point?
     bool isRetracted(List<Rope> toCheck)
@@ -332,17 +378,12 @@ public class RopeControl : MonoBehaviour
         if (attatched)
         {
             Ropes[0].end = player.transform.position;
-        }
-
-        if (attatched)
-        {
+        
             foreach (Rope itemRope in Ropes)
             {
                 itemRope.drawLine(itemRope.end, itemRope.anchor);
             }
-        }
-        if (attatched)
-        {
+               
             lastAngle = AngleSigned(player.transform.position - Ropes[0].anchor, Vector3.left, Vector3.back);
         }
 
@@ -399,23 +440,54 @@ public class RopeControl : MonoBehaviour
                 return false;
 
             }
-            anchorBendObject = (GameObject)Instantiate(ropeBend);
-            anchorBendObject.transform.position = anchorPoint;
-
+            
             GlobalStuff.LastColour = hit.transform.renderer.material.color;
-            player.renderer.material.color = GlobalStuff.LastColour;
-            Color trail = Color.Lerp(GlobalStuff.LastColour, Color.white, 0.5f);
-            player.GetComponent<TrailRenderer>().material.SetColor("_Color", trail);
-
+            
             return true;
 
         }
         else
         {
-            return false;
+
+            RaycastHit[] possibleHits = Physics.SphereCastAll(tryAnchor, 1.0f, distance * 2f, mask);
+
+            if (possibleHits.Length == 0)
+            {
+                return false;
+            }
+            else
+            {
+
+                List<Vector3> cornerlist = new List<Vector3>();
+
+                foreach (RaycastHit possibleHit in possibleHits)
+                {
+
+                    cornerlist.Add(FindClosestCorner(player.transform.position, mousePos, possibleHit.transform,0.1f));
+
+                }
+                
+
+                foreach (Vector3 cornerPoint in cornerlist)
+                {
+                    Ray canConnectRay  = new Ray(cornerPoint,Vector3.Normalize(cornerPoint-player.transform.position));
+                    if (Physics.Raycast(canConnectRay, Vector3.Distance(player.transform.position, cornerPoint), mask))
+                    {
+                        cornerlist.Remove(cornerPoint);
+                    }
+
+                }
+                cornerlist = cornerlist.OrderBy(vec3 => pointToLineDistance(player.transform.position, mousePos, vec3)).ToList();
+
+                anchorPoint = cornerlist[0];
+
+                return true;
+
+            }
         }
     }
 
+   
     // Controls
     void Update()
     {
@@ -433,6 +505,12 @@ public class RopeControl : MonoBehaviour
         {
             if (isAnchored())
             {
+                anchorBendObject = (GameObject)Instantiate(ropeBend);
+                anchorBendObject.transform.position = anchorPoint;                              
+                player.renderer.material.color = GlobalStuff.LastColour;
+                Color trail = Color.Lerp(GlobalStuff.LastColour, Color.white, 0.5f);
+                player.GetComponent<TrailRenderer>().material.SetColor("_Color", trail);
+
                 Ropes = new List<Rope>();
                 Ropes.Add(new Rope(anchorPoint, player.transform.position, ropeBend));
                 //Make first rope in list attach

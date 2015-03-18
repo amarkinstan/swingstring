@@ -281,7 +281,7 @@ public class CreateChunk : MonoBehaviour
 						o.parent = transform;
 						//change scale
 						o.localScale = new Vector3 (blockScale.magnitude * 2.5f, blockScale.magnitude * 2.5f, Random.Range (2f, 4f));
-						//set the colour as defined by the user
+						
 			
 						break;
 				 
@@ -298,7 +298,7 @@ public class CreateChunk : MonoBehaviour
 								o.localScale = new Vector3 (25f, 25f, o.localScale.z);
 						}
 						
-						//set the colour as defined by the user
+						
 			
 			
 			
@@ -443,8 +443,9 @@ public class CreateChunk : MonoBehaviour
 						childSprite.localPosition = new Vector3 (childSprite.localPosition.x, 0.5f + (childSprite.localScale.y * 0.5f), childSprite.localPosition.z);
 			
 						//adjust horizontal postion
-			
-						childSprite.localPosition = new Vector3 (childSprite.localPosition.x + Random.Range (-0.4f, 0.4f), childSprite.localPosition.y, childSprite.localPosition.z);
+                        
+                        float minDistanceFromEdge = (1- childSprite.localScale.x*spriteSettings.baseWidth)/2f;
+                        childSprite.localPosition = new Vector3(childSprite.localPosition.x + Random.Range(-minDistanceFromEdge, minDistanceFromEdge), childSprite.localPosition.y, childSprite.localPosition.z);
 			
 						//adjust colour
 						if (spriteSettings.changeColor) {

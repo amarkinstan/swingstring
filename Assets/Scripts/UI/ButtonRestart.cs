@@ -5,7 +5,7 @@ using System;
 
 public class ButtonRestart : MonoBehaviour
 {
-
+        public string LevelName;
 		public Text seedText;
 
 		//Called On click
@@ -15,7 +15,7 @@ public class ButtonRestart : MonoBehaviour
 				
 				//clear statics that need to be cleared, then load game
 				EventManager.TriggerGameRestart ();
-				StartCoroutine (LevelLoad (Application.loadedLevelName));
+				StartCoroutine (LevelLoad (LevelName));
 				
 	
 		}

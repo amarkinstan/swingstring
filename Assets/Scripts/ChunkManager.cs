@@ -11,6 +11,11 @@ public class ChunkManager : MonoBehaviour
     public GameObject sparseBig;
     public GameObject denseSmall;
     public GameObject denseBig;
+    public GameObject startChunk;
+
+    //use starting chunk?
+    public bool useStart;
+
     //the player gameObject
     public GameObject Player;
 
@@ -33,7 +38,15 @@ public class ChunkManager : MonoBehaviour
         seed = GlobalStore.Seed;
 
         //make first 9 chunbks around the player
-        allChunks.Add("0,0", new Chunk(0, 0, seed, sparseSmall, sparseBig, denseSmall, denseBig));
+        if (useStart)
+        {
+            allChunks.Add("0,0", new Chunk(0, 0, seed, startChunk,startChunk,startChunk,startChunk));
+        }
+        else
+        {
+            allChunks.Add("0,0", new Chunk(0, 0, seed, sparseSmall, sparseBig, denseSmall, denseBig));
+        }
+        
         allChunks.Add("1,0", new Chunk(1, 0, seed, sparseSmall, sparseBig, denseSmall, denseBig));
         allChunks.Add("0,1", new Chunk(0, 1, seed, sparseSmall, sparseBig, denseSmall, denseBig));
         allChunks.Add("1,1", new Chunk(1, 1, seed, sparseSmall, sparseBig, denseSmall, denseBig));
@@ -79,30 +92,31 @@ public class ChunkManager : MonoBehaviour
 
             this.deleting = false;
 
+            
 
-            //combinations of size and density give different chunk types
-            if (size < 0.5f & density < 0.5f)
-            {
+                //combinations of size and density give different chunk types
+                if (size < 0.5f & density < 0.5f)
+                {
 
-                this.field = (GameObject)Instantiate(sparseSmall, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
-            }
-            if (size > 0.5f & density > 0.5f)
-            {
+                    this.field = (GameObject)Instantiate(sparseSmall, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
+                }
+                if (size > 0.5f & density > 0.5f)
+                {
 
-                this.field = (GameObject)Instantiate(denseBig, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
-            }
-            if (size < 0.5f & density > 0.5f)
-            {
+                    this.field = (GameObject)Instantiate(denseBig, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
+                }
+                if (size < 0.5f & density > 0.5f)
+                {
 
-                this.field = (GameObject)Instantiate(denseSmall, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
-            }
-            if (size > 0.5f & density < 0.5f)
-            {
+                    this.field = (GameObject)Instantiate(denseSmall, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
+                }
+                if (size > 0.5f & density < 0.5f)
+                {
 
-                this.field = (GameObject)Instantiate(sparseBig, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
-            }
+                    this.field = (GameObject)Instantiate(sparseBig, new Vector3(IndexToWorld(xCoord), IndexToWorld(yCoord), 0f), Quaternion.identity);
+                }
 
-
+            
 
 
 
