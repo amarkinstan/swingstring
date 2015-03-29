@@ -171,11 +171,18 @@ public class ChunkManager : MonoBehaviour
             {
                 string tempX = (currentX + q).ToString();
                 string tempY = (currentY + p).ToString();
+                
                 if (allChunks.ContainsKey(tempX + "," + tempY) == false)
                 {
-
-                    allChunks.Add(tempX + "," + tempY, new Chunk(currentX + q, currentY + p, seed, sparseSmall, sparseBig, denseSmall, denseBig));
-                    //print("MAKE1");
+                    if ((currentX +q == 0) && (currentY +p == 0) && useStart)
+                    {
+                        allChunks.Add(tempX + "," + tempY, new Chunk(currentX + q, currentY + p, seed, startChunk, startChunk, startChunk, startChunk));
+                    }
+                    else
+                    {
+                        allChunks.Add(tempX + "," + tempY, new Chunk(currentX + q, currentY + p, seed, sparseSmall, sparseBig, denseSmall, denseBig));
+                        //print("MAKE1");
+                    }
 
                 }
             }

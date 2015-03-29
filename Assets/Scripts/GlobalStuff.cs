@@ -9,7 +9,6 @@ using System.Linq;
 public class GlobalStuff : MonoBehaviour
 {
     //Variables that can be changed in the editor    
-
        
     //average speed of the player of last x frames
     public static float AveragePlayerSpeed;
@@ -60,7 +59,7 @@ public class GlobalStuff : MonoBehaviour
 
     //The valocity of the player at pause
     public static Vector3 savedVelocity;
-
+    
     //Internal vars
 
     //The escape menu

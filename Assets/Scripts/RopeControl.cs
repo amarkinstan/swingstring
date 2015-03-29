@@ -463,18 +463,31 @@ public class RopeControl : MonoBehaviour
                 foreach (RaycastHit possibleHit in possibleHits)
                 {
 
-                    cornerlist.Add(FindClosestCorner(player.transform.position, mousePos, possibleHit.transform,0.1f));
+                    if (possibleHit.transform.tag != "NoAttatch")
+                    {
+                        if (possibleHit.transform.tag == "spinner")
+                        {
+                            anchorPoint = hit.transform.position;
+                            return true;
+                        }
+                        else
+                        {
+                            cornerlist.Add(FindClosestCorner(player.transform.position, mousePos, possibleHit.transform, 0.1f));
+                        }
+                    }
 
                 }
-                
 
-                foreach (Vector3 cornerPoint in cornerlist)
+                Vector3[] listCopy = cornerlist.ToArray<Vector3>();
+
+                foreach (Vector3 cornerPoint in listCopy)
                 {
                     Ray canConnectRay  = new Ray(cornerPoint,Vector3.Normalize(cornerPoint-player.transform.position));
                     if (Physics.Raycast(canConnectRay, Vector3.Distance(player.transform.position, cornerPoint), mask))
                     {
                         cornerlist.Remove(cornerPoint);
                     }
+                    
 
                 }
                 cornerlist = cornerlist.OrderBy(vec3 => pointToLineDistance(player.transform.position, mousePos, vec3)).ToList();

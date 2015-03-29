@@ -6,7 +6,7 @@ using System;
 public class ButtonRestart : MonoBehaviour
 {
         public string LevelName;
-		public Text seedText;
+		
 
 		//Called On click
 		public void ClickRestart ()
