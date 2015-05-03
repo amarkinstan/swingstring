@@ -8,7 +8,10 @@ using System.Linq;
 //Used to hold all the global variables and behaviours in a scene
 public class GlobalStuff : MonoBehaviour
 {
-    //Variables that can be changed in the editor    
+    //Variables that can be changed in the editor 
+   
+    //are when on the titel screen?
+    public bool onTitle;
        
     //average speed of the player of last x frames
     public static float AveragePlayerSpeed;
@@ -79,7 +82,18 @@ public class GlobalStuff : MonoBehaviour
     //How many times the game has stuttered since launch 
     private int BoomCOUNT = 0;
 
+    public static string MakeSeed(int stringLength)
+    {
 
+        var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        var random = new System.Random();
+        var result = new string(
+            Enumerable.Repeat(chars, stringLength)
+                      .Select(s => s[random.Next(s.Length)])
+                      .ToArray());
+
+        return result;
+    }
 
 
 
@@ -107,13 +121,26 @@ public class GlobalStuff : MonoBehaviour
         LastColour = startingColour;
 
         //seed from textbox
-        seedText.text = GlobalStore.Seed.ToString();
+        seedText.text = GlobalStore.SeedText;
 
         //if we don't have a seed make a random one
-        if (GlobalStore.Seed == 0f)
+        if (GlobalStore.Seed == 0f && GlobalStore.SeedText == "" && !onTitle)
         {
-            GlobalStore.Seed = (float)((int)(Random.value * 1000000f)) / 10f;
-            seedText.text = GlobalStore.Seed.ToString();
+            string newSeed = MakeSeed(7);
+            //GlobalStore.Seed = (float)((int)(Random.value * 1000000f)) / 10f;
+
+            seedText.text = newSeed;
+
+            GlobalStore.Seed = ((float)seedText.text.GetHashCode() * 10f) / 100000f;
+
+            if (GlobalStore.Seed < 0f)
+            {
+                GlobalStore.Seed = -GlobalStore.Seed;
+            }
+
+            GlobalStore.SeedText = seedText.text;
+
+            print("CHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" + GlobalStore.Seed);
 
         }
 
@@ -129,9 +156,12 @@ public class GlobalStuff : MonoBehaviour
         Physics.gravity = Gravity;
 
         //menu should start hidden
-        menu = GameObject.Find("Menu").GetComponent<CanvasGroup>();
-        menu.alpha = 0;
-        menu.interactable = false;
+        if (!onTitle)
+        {
+            menu = GameObject.Find("Menu").GetComponent<CanvasGroup>();
+            menu.alpha = 0;
+            menu.interactable = false;
+        }
 
 
     }
@@ -156,23 +186,18 @@ public class GlobalStuff : MonoBehaviour
     {
         //make sure no gravity effects are happening
         Physics.gravity = Gravity;
-        
-        //if the seedtext is a number, set the global seed as that
-        float number;
-        if (float.TryParse(seedText.text, out number))
-        {
-            GlobalStore.Seed = float.Parse(seedText.text);
 
-        }
-        else
-        {
-            GlobalStore.Seed = seedText.text.GetHashCode();
+
+
+        GlobalStore.Seed = ((float)seedText.text.GetHashCode() * 10f) / 100000f;
 
             if (GlobalStore.Seed < 0f)
             {
                 GlobalStore.Seed = -GlobalStore.Seed;
             }
-        }
+
+        GlobalStore.SeedText = seedText.text;
+        
         print("CHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"+GlobalStore.Seed);
     }
 
@@ -224,7 +249,7 @@ public class GlobalStuff : MonoBehaviour
     void Update()
     {
         //if the game is runnign
-        if (Paused == false && isDead == false)
+        if (Paused == false && isDead == false && !onTitle)
         {
             //record player speed for moving average
             speeds.Add(player.rigidbody.velocity.magnitude);

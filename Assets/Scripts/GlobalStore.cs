@@ -7,5 +7,6 @@ public static class GlobalStore
 
 		public static float Seed = 0f;
 
+        public static string SeedText = "";
 	
 }
