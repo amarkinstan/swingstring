@@ -249,7 +249,7 @@ public class GlobalStuff : MonoBehaviour
         }
 
         // find stutters
-        if (Time.unscaledDeltaTime > 0.017f)
+        if (Time.unscaledDeltaTime > 0.02f)
         {
             BoomCOUNT++;
             print("BOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOM " + BoomCOUNT);

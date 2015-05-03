@@ -5,6 +5,12 @@ using System.Linq;
 
 public class RopeControl : MonoBehaviour
 {
+    //easy mode?
+    public bool faceAttatch;
+
+    //camera for mouse projections
+    public Camera cameraForMouse;
+
     //The object that is going to appear when the rope bends (makes the rope appear smooth)
     public GameObject ropeBend;
 
@@ -23,13 +29,13 @@ public class RopeControl : MonoBehaviour
     //Spring Damper for Ropes
     public float damper = 0.2f;
 
-    //The object that is attached to he ropes (usually the player)
+    //is autoaim on?
+    public bool autoAim;
+
+    //The object that is attached to the ropes (usually the player)
     public GameObject player;
 
     //Internal variables
-
-    //The position of the first anchored attached to an object
-    private Vector3 anchorPoint;
 
     //The object that is going to appear when the rope begins (makes the rope appear smooth)
     private GameObject anchorBendObject;
@@ -56,7 +62,7 @@ public class RopeControl : MonoBehaviour
         //the component that creates the rope line
         public LineRenderer line;
 
-        //The Object in the world that the line renderer sit inside
+        //The Object in the world that the line renderer sits inside
         public GameObject hasLine;
 
         //The Object that will contain the dot model that makes the ropes appear to have rounded ends
@@ -147,7 +153,7 @@ public class RopeControl : MonoBehaviour
         toJoin.RemoveAt(0);
         //Correct the position/length of remaining rope
         toJoin[0].end = player.transform.position;
-        toJoin[0].setUpRope(player, oldLength1 + oldLength2, spring, damper,RopeColour);
+        toJoin[0].setUpRope(player, oldLength1 + oldLength2, spring, damper, RopeColour);
         //Move bend object to appear round
         toJoin[0].hasBend.transform.position = toJoin[0].anchor;
 
@@ -164,7 +170,7 @@ public class RopeControl : MonoBehaviour
         //clean up
         KillJoints();
         //setup new Rope
-        toSplit[0].setUpRope(player, Vector3.Distance(player.transform.position, splitPoint), spring, damper,RopeColour);
+        toSplit[0].setUpRope(player, Vector3.Distance(player.transform.position, splitPoint), spring, damper, RopeColour);
         toSplit[0].hasBend.transform.position = splitPoint;
         //check direction of new rope
         if (deltaAngle > 0f)
@@ -196,8 +202,7 @@ public class RopeControl : MonoBehaviour
 
     //Given a point in world space and an object, get the closest vertex of that object, then find a point wireSize away from that.
     //Assumes Object is a cube
-    //TODO use any object
-    Vector3 FindCorner(Vector3 hitSpot, Transform hitCube, float wireSize)
+    Vector3 FindClosestCornerToEdge(Vector3 hitSpot, Transform hitCube, float wireSize)
     {
 
         Vector3 centrePos;
@@ -237,7 +242,9 @@ public class RopeControl : MonoBehaviour
 
     }
 
-    Vector3 FindClosestCorner(Vector3 lineStart, Vector3 lineEnd, Transform hitCube, float wireSize)
+
+    //variant for autoaim
+    Vector3 FindClosestCornerToLine(Vector3 lineStart, Vector3 lineEnd, Transform hitCube, float wireSize)
     {
 
         Vector3 centrePos;
@@ -253,7 +260,7 @@ public class RopeControl : MonoBehaviour
         width = width + wireSize;
         height = height + wireSize;
 
-        
+
         //topleft
         corners.Add(new Vector3(centrePos.x + 0.5f, centrePos.y + 0.5f, 0f));
         //topright
@@ -272,14 +279,14 @@ public class RopeControl : MonoBehaviour
 
         //Debug.DrawRay (hitCube.TransformPoint (corners [0]), hitCube.TransformDirection (diagDir), Color.white, 5000f);
 
-        return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize/2f));
-                
+        return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f));
+
 
     }
 
-    float pointToLineDistance(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
+    public static float pointToLineDistance(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
     {
-        return Vector3.Magnitude(Vector3.Cross((point - lineStart),(point - lineEnd)))/Vector3.Magnitude(lineEnd-lineStart);
+        return Vector3.Magnitude(Vector3.Cross((point - lineStart), (point - lineEnd))) / Vector3.Magnitude(lineEnd - lineStart);
     }
 
 
@@ -329,12 +336,12 @@ public class RopeControl : MonoBehaviour
     }
 
     //Do we need to split ropes? (Wrap around object)
-    bool isSplit(List<Rope> toCheck)
+    RaycastHit isSplit(List<Rope> toCheck, Vector3 origin)
     {
-
+        RaycastHit hit;
         if (attatched)
         {
-            RaycastHit hit;
+
             Vector3 direction;
             float distance;
 
@@ -342,23 +349,23 @@ public class RopeControl : MonoBehaviour
             mask = ~mask;
 
             //Look for Splits
-            direction = toCheck[0].anchor - player.transform.position;
+            direction = toCheck[0].anchor - origin;
             direction.Normalize();
-            Ray lookSplit = new Ray(player.transform.position, direction);
-            Debug.DrawLine(player.transform.position, toCheck[0].anchor, Color.red, Time.deltaTime);
-            distance = Vector3.Distance(player.transform.position, toCheck[0].anchor) - 0.25f;
+            Ray lookSplit = new Ray(origin, direction);
+            //Debug.DrawLine(origin, toCheck[0].anchor, Color.red, Time.deltaTime);
+            distance = Vector3.Distance(origin, toCheck[0].anchor) - 0.25f;
             if (distance > 0f)
             {
-                //if (Physics.Raycast (lookSplit, out hit, distance, LayerMask.NameToLayer ("NoRopeCollision"))) {
+
                 if (Physics.Raycast(lookSplit, out hit, distance, mask))
                 {
-                    RopeSplit(toCheck, FindCorner(hit.point, hit.transform, 0.1f));
-
-                    return true;
+                    return hit;
                 }
             }
         }
-        return false;
+        hit = new RaycastHit();
+
+        return hit;
 
     }
 
@@ -378,12 +385,12 @@ public class RopeControl : MonoBehaviour
         if (attatched)
         {
             Ropes[0].end = player.transform.position;
-        
+
             foreach (Rope itemRope in Ropes)
             {
                 itemRope.drawLine(itemRope.end, itemRope.anchor);
             }
-               
+
             lastAngle = AngleSigned(player.transform.position - Ropes[0].anchor, Vector3.left, Vector3.back);
         }
 
@@ -402,14 +409,31 @@ public class RopeControl : MonoBehaviour
         {
             RopeJoin(Ropes);
         }
-        if (isSplit(Ropes))
-        {
 
+        RaycastHit splitHit = isSplit(Ropes, player.transform.position);
+
+
+        if (splitHit.transform != null)
+        {
+            RopeSplit(Ropes, FindClosestCornerToEdge(splitHit.point, splitHit.transform, 0.1f));
         }
     }
 
     //Is the position we just clicked a good spot  to put an anchor?
-    bool isAnchored()
+
+    Vector3 findAnchorFaceAttatch(Camera mainView, Vector3 clickPoint, Vector3 origin)
+    {
+        RaycastHit hit;
+        Vector3 mousePos = mainView.ScreenToWorldPoint(new Vector3(clickPoint.x, clickPoint.y, 0f));
+        if (Physics.Raycast(mousePos, Vector3.forward,out hit))
+        {
+            GlobalStuff.LastColour = hit.transform.renderer.material.color;
+            return new Vector3(hit.point.x, hit.point.y, 0f);
+        }
+        return Vector3.zero;
+    }
+
+    Vector3 findAnchor(Camera mainView, Vector3 clickPoint, Vector3 origin)
     {
         Vector3 clickVector;
         Vector3 direction;
@@ -418,42 +442,41 @@ public class RopeControl : MonoBehaviour
         float distance;
         int mask = 1 << 11 | 1 << 12 | 1 << 2;
         mask = ~mask;
-        mousePos = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10f));
-        clickVector = mousePos - player.transform.position;
+        mousePos = mainView.ScreenToWorldPoint(new Vector3(clickPoint.x, clickPoint.y, 10f));
+        clickVector = mousePos - origin;
         distance = clickVector.magnitude;
         direction = clickVector / distance;
         Ray tryAnchor = new Ray(player.transform.position, direction);
+
+        //Did we hit anything?
         if (Physics.Raycast(tryAnchor, out hit, maxRopeLength, mask))
         {
 
-            anchorPoint = hit.point + (hit.normal * 0.05f);
+            GlobalStuff.LastColour = hit.transform.renderer.material.color;
+
             //special block interactions
             if (hit.transform.tag == "spinner")
             {
-
-                anchorPoint = hit.transform.position;
-
+                return hit.transform.position;
             }
             if (hit.transform.tag == "NoAttatch")
             {
-
-                return false;
-
+                return Vector3.zero;
             }
-            
-            GlobalStuff.LastColour = hit.transform.renderer.material.color;
-            
-            return true;
+
+            return (hit.point + (hit.normal * 0.05f));
+
 
         }
-        else
+        //if we missed did we get clsoe to anything?
+        else if (autoAim)
         {
 
             RaycastHit[] possibleHits = Physics.SphereCastAll(tryAnchor, 1.0f, distance * 2f, mask);
 
             if (possibleHits.Length == 0)
             {
-                return false;
+                return Vector3.zero;
             }
             else
             {
@@ -467,12 +490,12 @@ public class RopeControl : MonoBehaviour
                     {
                         if (possibleHit.transform.tag == "spinner")
                         {
-                            anchorPoint = hit.transform.position;
-                            return true;
+                            return hit.transform.position;
+
                         }
                         else
                         {
-                            cornerlist.Add(FindClosestCorner(player.transform.position, mousePos, possibleHit.transform, 0.1f));
+                            cornerlist.Add(FindClosestCornerToLine(player.transform.position, mousePos, possibleHit.transform, 0.1f));
                         }
                     }
 
@@ -482,25 +505,27 @@ public class RopeControl : MonoBehaviour
 
                 foreach (Vector3 cornerPoint in listCopy)
                 {
-                    Ray canConnectRay  = new Ray(cornerPoint,Vector3.Normalize(cornerPoint-player.transform.position));
-                    if (Physics.Raycast(canConnectRay, Vector3.Distance(player.transform.position, cornerPoint), mask))
+                    Ray canConnectRay = new Ray(cornerPoint, Vector3.Normalize(cornerPoint - origin));
+                    if (Physics.Raycast(canConnectRay, Vector3.Distance(origin, cornerPoint), mask))
                     {
                         cornerlist.Remove(cornerPoint);
                     }
-                    
+
 
                 }
-                cornerlist = cornerlist.OrderBy(vec3 => pointToLineDistance(player.transform.position, mousePos, vec3)).ToList();
+                cornerlist = cornerlist.OrderBy(vec3 => pointToLineDistance(origin, mousePos, vec3)).ToList();
 
-                anchorPoint = cornerlist[0];
+                return cornerlist[0];
 
-                return true;
+
 
             }
         }
+
+        return Vector3.zero;
     }
 
-   
+
     // Controls
     void Update()
     {
@@ -514,12 +539,24 @@ public class RopeControl : MonoBehaviour
         }
 
         //Make the rope with left click
-        if ((Input.GetButtonDown("Attach + Pull")) == true && attatched == false && GlobalStuff.Paused == false)
+        if ((Input.GetButtonDown("Attach + Pull")) == true && attatched == false && GlobalStuff.Paused == false && GlobalStuff.isDead == false)
         {
-            if (isAnchored())
+            Vector3 anchorPoint = Vector3.zero;
+            
+            if (faceAttatch)
+            {
+                anchorPoint = findAnchorFaceAttatch(cameraForMouse, Input.mousePosition, player.transform.position);
+
+            }
+            else
+            {
+                anchorPoint = findAnchor(cameraForMouse, Input.mousePosition, player.transform.position);
+                               
+            }
+            if (anchorPoint != Vector3.zero)
             {
                 anchorBendObject = (GameObject)Instantiate(ropeBend);
-                anchorBendObject.transform.position = anchorPoint;                              
+                anchorBendObject.transform.position = anchorPoint;
                 player.renderer.material.color = GlobalStuff.LastColour;
                 Color trail = Color.Lerp(GlobalStuff.LastColour, Color.white, 0.5f);
                 player.GetComponent<TrailRenderer>().material.SetColor("_Color", trail);
@@ -527,7 +564,7 @@ public class RopeControl : MonoBehaviour
                 Ropes = new List<Rope>();
                 Ropes.Add(new Rope(anchorPoint, player.transform.position, ropeBend));
                 //Make first rope in list attach
-                Ropes[0].setUpRope(player, Vector3.Distance(player.transform.position, anchorPoint), spring, damper,RopeColour);
+                Ropes[0].setUpRope(player, Vector3.Distance(player.transform.position, anchorPoint), spring, damper, RopeColour);
                 Ropes[0].hasBend.renderer.enabled = false;
 
                 attatched = true;
@@ -535,13 +572,13 @@ public class RopeControl : MonoBehaviour
             }
         }
         //Retract Rope
-        if ((Input.GetButton("Attach + Pull")) == true && attatched == true && GlobalStuff.Paused == false)
+        if ((Input.GetButton("Attach + Pull")) == true && attatched == true && GlobalStuff.Paused == false && GlobalStuff.isDead == false)
         {
             //Retract the first rope
             Ropes[0].Retract(retractSpeed * Time.deltaTime);
         }
         //Detach
-        if ((Input.GetButtonDown("Dettach") == true) && attatched == true && GlobalStuff.Paused == false)
+        if ((Input.GetButtonDown("Dettach") == true) && attatched == true && GlobalStuff.Paused == false && GlobalStuff.isDead == false)
         {
             //delete all ropeJoints
             attatched = false;

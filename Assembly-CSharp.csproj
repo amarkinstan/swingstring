@@ -67,6 +67,7 @@
      <Compile Include="Assets\Scripts\SpriteSettings.cs" />
      <Compile Include="Assets\Scripts\SpriteSettingsSpecial.cs" />
      <Compile Include="Assets\Scripts\TerminalVelocity.cs" />
+     <Compile Include="Assets\Scripts\TowerManager.cs" />
      <Compile Include="Assets\Scripts\UI\ButtonQuit.cs" />
      <Compile Include="Assets\Scripts\UI\ButtonRestart.cs" />
      <Compile Include="Assets\Scripts\UI\ButtonResume.cs" />
