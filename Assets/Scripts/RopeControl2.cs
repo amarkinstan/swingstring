@@ -130,32 +130,7 @@ public class RopeControl2 : MonoBehaviour {
 
     }
 
-    //Should we split the rope?
-    public Vector3? isSplit(RopeSegment rs,int mask)
-    {
-
-        RaycastHit hit;
-        Vector3 direction;
-        float distance;
-
-        
-        //Look for Splits
-        direction = rs.anchor - player.transform.position;
-        direction.Normalize();
-        Ray lookSplit = new Ray(player.transform.position, direction);
-        //Debug.DrawLine(player.transform.position, rs.anchor, Color.red, Time.deltaTime);
-        distance = Vector3.Distance(player.transform.position, rs.anchor) - 0.25f;
-        if (distance > 0f)
-        {
-            //if (Physics.Raycast (lookSplit, out hit, distance, LayerMask.NameToLayer ("NoRopeCollision"))) {
-            if (Physics.Raycast(lookSplit, out hit, distance, mask))
-            {
-                return RopeControl2.FindClosestCornerToEdge(hit.point, hit.transform, 0.1f);
-            }
-        }
-        return null;
-    }
-
+    
     //did we hit something?
     public Vector3? HitTest(Camera camera, int mask, Vector3 origin, bool autoAim)
     {
@@ -282,7 +257,7 @@ public class RopeControl2 : MonoBehaviour {
                 r.RopeJoin();
             }
 
-            Vector3? ropeCol = isSplit(r.LastSegment(),splitMask);
+            Vector3? ropeCol = r.isSplit(splitMask);
             if (ropeCol != null)
             {
                 r.RopeSplit((Vector3)ropeCol);
@@ -349,10 +324,8 @@ public class RopeSegment : Object
 
     // Stored Length
     public float length;
-        
-    // Spin direction on init, needed for wrap/unwrap checks
-    public bool isAntiClockwise;
-
+       
+    
     // RopeSegment constructor
     public RopeSegment(GameObject bend, Vector3 anchor, Vector3 end,  Color ropeColor, float width, float length,GameObject lineParent)
     {
@@ -430,6 +403,9 @@ public class Rope : Object
     private float currentAngle;
     private float deltaAngle;
 
+    // Spin direction on init, needed for wrap/unwrap checks
+    public bool isAntiClockwise;
+
     // Physics controls
     public ConfigurableJoint ropeJoint;
     private SoftJointLimit ropeLimit;
@@ -469,8 +445,7 @@ public class Rope : Object
         this.ropeLimit.damper = damper;
         this.ropeLimit.spring = spring;
 
-        // Get a handle on the player object velocity
-        //this.velocity = player.GetComponent<Rigidbody>().velocity;
+        
     }
 
     // Reduce the length of the rope segment by a certain amount
@@ -479,6 +454,10 @@ public class Rope : Object
         this.ropeLimit.limit -= amount;
         this.ropeJoint.linearLimit = this.ropeLimit;
         this.LastSegment().length -= amount;
+        if (this.RopeSegments.Count > 1)
+        {
+            this.RopeSegments.ElementAt(1).length -= amount;
+        }
     }
 
     public RopeSegment LastSegment()
@@ -513,13 +492,12 @@ public class Rope : Object
         // where the bend object is
 
 
-        //set the length of the new segment to something sensible
+        //set the length of the new segment to the length of the old rope minus the part that was split
         float newDistance = this.LastSegment().length - (Vector3.Distance(this.LastSegment().anchor, splitPoint));
 
         // Adjust the end location of the colliding rope segment to the split point
         this.LastSegment().end = splitPoint;
-
-        
+                
 
         // Create a new rope segment from the player to the split point
         this.RopeSegments.Push(new RopeSegment(this.bend, splitPoint, this.player.transform.position, this.color, this.width,newDistance,this.lineContainer));
@@ -529,23 +507,27 @@ public class Rope : Object
         this.RefreshJoint();
 
         // Record the initial swing direction
-        this.LastSegment().isAntiClockwise = deltaAngle > 0f;
+        this.isAntiClockwise = deltaAngle > 0f;
     }
 
     // Merges two ropes when unwrapping from an object
     public void RopeJoin()
     {
+                
         // Destroy and derefence the most recently added RopeSegment from the list
-        this.LastSegment().Destroy();
-        this.RopeSegments.Pop();
+        
+        this.RopeSegments.Pop().Destroy();
 
         // Extend the new top-of stack RopeSegment to catch the player
         this.LastSegment().end = this.player.transform.position;
-
+                
         // Refresh the spring joint
         this.RefreshJoint();
+
+        
     }
 
+    
     public void RefreshJoint()
     {
         // Kill the existing spring joint
@@ -584,12 +566,43 @@ public class Rope : Object
             float angle = RopeControl.AngleSigned(this.RopeSegments.ElementAt(1).end - this.RopeSegments.ElementAt(1).anchor,
                 this.LastSegment().anchor - player.transform.position, Vector3.back);
 
-            return ((angle < 0f && this.LastSegment().isAntiClockwise)
-                || (angle > 0f && !this.LastSegment().isAntiClockwise));
+            if (((angle < 0f && this.isAntiClockwise)
+                || (angle > 0f && !this.isAntiClockwise)))
+            {
+                int duck = 1;
+            }
+
+            return ((angle < 0f && this.isAntiClockwise)
+                || (angle > 0f && !this.isAntiClockwise));
         }
         return false;
     }
 
+    //Should we split the rope?
+    public Vector3? isSplit(int mask)
+    {
+
+        RaycastHit hit;
+        Vector3 direction;
+        float distance;
+
+
+        //Look for Splits
+        direction = this.LastSegment().anchor - player.transform.position;
+        direction.Normalize();
+        Ray lookSplit = new Ray(player.transform.position, direction);
+        
+        distance = Vector3.Distance(player.transform.position, this.LastSegment().anchor) - 0.25f;
+        if (distance > 0f)
+        {
+            
+            if (Physics.Raycast(lookSplit, out hit, distance, mask))
+            {
+                return RopeControl2.FindClosestCornerToEdge(hit.point, hit.transform, this.width);
+            }
+        }
+        return null;
+    }
     
 
     public void Destroy()
