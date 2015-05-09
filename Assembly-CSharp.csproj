@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\BlockBounce.cs" />
      <Compile Include="Assets\Scripts\Boundary.cs" />
+     <Compile Include="Assets\Scripts\CameraFollow.cs" />
      <Compile Include="Assets\Scripts\CameraZoom.cs" />
      <Compile Include="Assets\Scripts\ChunkManager.cs" />
      <Compile Include="Assets\Scripts\CreateChunk.cs" />
@@ -61,6 +62,7 @@
      <Compile Include="Assets\Scripts\PlayerCollisionCheck.cs" />
      <Compile Include="Assets\Scripts\Preload.cs" />
      <Compile Include="Assets\Scripts\RopeControl.cs" />
+     <Compile Include="Assets\Scripts\RopeControl2.cs" />
      <Compile Include="Assets\Scripts\ScoreCalculator.cs" />
      <Compile Include="Assets\Scripts\SlowField.cs" />
      <Compile Include="Assets\Scripts\SpinnerCollision.cs" />

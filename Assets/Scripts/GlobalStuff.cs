@@ -166,6 +166,16 @@ public class GlobalStuff : MonoBehaviour
 
     }
 
+    public static void setLastColor(Color colorHit,GameObject player)
+    {
+
+        LastColour = colorHit;
+        player.renderer.material.color = colorHit;
+        Color trail = Color.Lerp(LastColour, Color.white, 0.5f);
+        player.GetComponent<TrailRenderer>().material.SetColor("_Color", trail);
+
+    }
+
     //get block denisty
     public static float getDensity(float xCoord, float yCoord, float seed)
     {
