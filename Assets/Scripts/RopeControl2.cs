@@ -246,23 +246,32 @@ public class RopeControl2 : MonoBehaviour {
 
     void FixedUpdate()
     {
+        
+        
+        
+
         foreach (Rope r in Ropes)
         {
             if (r.isRetracted())
             {
                 r.RopeJoin();
+                
             }
             if (r.isStraight())
             {
                 r.RopeJoin();
+                
             }
 
             Vector3? ropeCol = r.isSplit(splitMask);
             if (ropeCol != null)
             {
                 r.RopeSplit((Vector3)ropeCol);
+                
             }
         }
+
+        
     }
 
     void LateUpdate()
@@ -563,14 +572,10 @@ public class Rope : Object
         float distance = Vector3.Distance(this.LastSegment().anchor, player.transform.position);
         if ((this.RopeSegments.Count > 1) && (distance > 0.3f))
         {
-            float angle = RopeControl.AngleSigned(this.RopeSegments.ElementAt(1).end - this.RopeSegments.ElementAt(1).anchor,
+            float angle = RopeControl2.AngleSigned(this.RopeSegments.ElementAt(1).end - this.RopeSegments.ElementAt(1).anchor,
                 this.LastSegment().anchor - player.transform.position, Vector3.back);
 
-            if (((angle < 0f && this.isAntiClockwise)
-                || (angle > 0f && !this.isAntiClockwise)))
-            {
-                int duck = 1;
-            }
+          
 
             return ((angle < 0f && this.isAntiClockwise)
                 || (angle > 0f && !this.isAntiClockwise));
