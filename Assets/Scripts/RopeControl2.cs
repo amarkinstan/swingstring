@@ -32,8 +32,8 @@ public class RopeControl2 : MonoBehaviour {
 
     private List<Rope> Ropes = new List<Rope>();
         
-    private int splitMask = ~(1 << 9 | 1 << 12 | 1 << 11);
-    private int hitMask = ~(1 << 11 | 1 << 12 | 1 << 2);
+    private int splitMask = ~(1 << 9 | 1 << 12 | 1 << 11);  //The mask which defines which layers split the rope
+    private int hitMask = ~(1 << 11 | 1 << 12 | 1 << 2);    //The mask that defines which layers the rope can attatch to
 
     #endregion Private Variables
 
@@ -246,10 +246,7 @@ public class RopeControl2 : MonoBehaviour {
 
     void FixedUpdate()
     {
-        
-        
-        
-
+      
         foreach (Rope r in Ropes)
         {
             if (r.isRetracted())
@@ -269,6 +266,8 @@ public class RopeControl2 : MonoBehaviour {
                 r.RopeSplit((Vector3)ropeCol);
                 
             }
+            
+            r.PhysicsUpdate();
         }
 
         
@@ -279,7 +278,7 @@ public class RopeControl2 : MonoBehaviour {
         // Handle visuals
         foreach (Rope r in Ropes)
         {
-            r.Update();
+            r.VisualUpdate();
         }
     }
 
@@ -475,11 +474,19 @@ public class Rope : Object
     }
 
     // Update angle records and visuals
-    public void Update()
+    public void VisualUpdate()
     {
-        // Update the end position of the first LineSegment
+       foreach (RopeSegment segment in RopeSegments)
+        {
+            segment.DrawLine();
+        }
+    }
+    
+    public void PhysicsUpdate()
+    {
+         // Update the end position of the first LineSegment
         this.LastSegment().end = this.player.transform.position;
-
+        
         // Get deltaAngle each frame
         if (this.RopeSegments.Count > 1)
         {
@@ -487,10 +494,6 @@ public class Rope : Object
                     Vector3.left, Vector3.back);
             this.deltaAngle = this.currentAngle - this.lastAngle;
             this.lastAngle = this.currentAngle;
-        }
-        foreach (RopeSegment segment in RopeSegments)
-        {
-            segment.DrawLine();
         }
     }
 
