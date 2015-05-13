@@ -252,22 +252,21 @@ public class RopeControl2 : MonoBehaviour {
             if (r.isRetracted())
             {
                 r.RopeJoin();
-                
+                continue;
             }
             if (r.isStraight())
             {
                 r.RopeJoin();
-                
+                continue;
             }
 
             Vector3? ropeCol = r.isSplit(splitMask);
             if (ropeCol != null)
             {
                 r.RopeSplit((Vector3)ropeCol);
-                
+                continue;
             }
             
-            r.PhysicsUpdate();
         }
 
         
@@ -278,7 +277,7 @@ public class RopeControl2 : MonoBehaviour {
         // Handle visuals
         foreach (Rope r in Ropes)
         {
-            r.VisualUpdate();
+            r.Update();
         }
     }
 
@@ -332,6 +331,9 @@ public class RopeSegment : Object
 
     // Stored Length
     public float length;
+
+    // Spin direction on init, needed for wrap/unwrap checks
+    public bool isAntiClockwise;
        
     
     // RopeSegment constructor
@@ -411,8 +413,7 @@ public class Rope : Object
     private float currentAngle;
     private float deltaAngle;
 
-    // Spin direction on init, needed for wrap/unwrap checks
-    public bool isAntiClockwise;
+    
 
     // Physics controls
     public ConfigurableJoint ropeJoint;
@@ -462,10 +463,11 @@ public class Rope : Object
         this.ropeLimit.limit -= amount;
         this.ropeJoint.linearLimit = this.ropeLimit;
         this.LastSegment().length -= amount;
-        if (this.RopeSegments.Count > 1)
+        if (RopeSegments.Count > 1)
         {
             this.RopeSegments.ElementAt(1).length -= amount;
         }
+       
     }
 
     public RopeSegment LastSegment()
@@ -474,19 +476,11 @@ public class Rope : Object
     }
 
     // Update angle records and visuals
-    public void VisualUpdate()
+    public void Update()
     {
-       foreach (RopeSegment segment in RopeSegments)
-        {
-            segment.DrawLine();
-        }
-    }
-    
-    public void PhysicsUpdate()
-    {
-         // Update the end position of the first LineSegment
+        // Update the end position of the first LineSegment
         this.LastSegment().end = this.player.transform.position;
-        
+
         // Get deltaAngle each frame
         if (this.RopeSegments.Count > 1)
         {
@@ -494,6 +488,10 @@ public class Rope : Object
                     Vector3.left, Vector3.back);
             this.deltaAngle = this.currentAngle - this.lastAngle;
             this.lastAngle = this.currentAngle;
+        }
+        foreach (RopeSegment rs in RopeSegments)
+        {
+            rs.DrawLine();
         }
     }
 
@@ -519,7 +517,7 @@ public class Rope : Object
         this.RefreshJoint();
 
         // Record the initial swing direction
-        this.isAntiClockwise = deltaAngle > 0f;
+        this.LastSegment().isAntiClockwise = deltaAngle > 0f;
     }
 
     // Merges two ropes when unwrapping from an object
@@ -580,8 +578,8 @@ public class Rope : Object
 
           
 
-            return ((angle < 0f && this.isAntiClockwise)
-                || (angle > 0f && !this.isAntiClockwise));
+            return ((angle < 0f && this.LastSegment().isAntiClockwise)
+                || (angle > 0f && !this.LastSegment().isAntiClockwise));
         }
         return false;
     }
@@ -619,7 +617,9 @@ public class Rope : Object
         {
             rs.Destroy();
         }
+        
         Destroy(this.ropeJoint);
+        
         Destroy(this);
     }
 }
