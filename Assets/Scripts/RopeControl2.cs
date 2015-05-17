@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-public class RopeControl2 : MonoBehaviour {
+public class RopeControl2 : MonoBehaviour
+{
 
     #region Public Variables
 
@@ -31,20 +32,23 @@ public class RopeControl2 : MonoBehaviour {
     #region Private Variables
 
     private List<Rope> Ropes = new List<Rope>();
-        
-    private int splitMask = ~(1 << 9 | 1 << 12 | 1 << 11);  //The mask which defines which layers split the rope
-    private int hitMask = ~(1 << 11 | 1 << 12 | 1 << 2);    //The mask that defines which layers the rope can attatch to
+
+    private int splitMask = ~(1 << 9 | 1 << 12 | 1 << 11);
+    private int hitMask = ~(1 << 11 | 1 << 12 | 1 << 2);
 
     #endregion Private Variables
 
-      
-    
+    void Start()
+    {
+        // Do nothing.
+    }
+
     //Get the true angle between two lines, can return negatives
     public static float AngleSigned(Vector3 v1, Vector3 v2, Vector3 n)
     {
         return Mathf.Atan2(
-    Vector3.Dot(n, Vector3.Cross(v1, v2)),
-    Vector3.Dot(v1, v2)) * Mathf.Rad2Deg;
+            Vector3.Dot(n, Vector3.Cross(v1, v2)),
+            Vector3.Dot(v1, v2)) * Mathf.Rad2Deg;
     }
 
     public static float pointToLineDistance(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
@@ -56,9 +60,9 @@ public class RopeControl2 : MonoBehaviour {
     {
 
         Vector3 centrePos = Vector3.zero;
-        
+
         List<Vector3> corners = new List<Vector3>();
-        
+
         //topleft
         corners.Add(new Vector3(centrePos.x + 0.5f, centrePos.y + 0.5f, 0f));
         //topright
@@ -69,19 +73,18 @@ public class RopeControl2 : MonoBehaviour {
         corners.Add(new Vector3(centrePos.x - 0.5f, centrePos.y - 0.5f, 0f));
 
         return corners;
-        
+
 
     }
 
+
     //Given a point in world space and an object, get the closest vertex of that object, then find a point wireSize away from that.
     //Assumes Object is a cube
-    public static Vector3 FindClosestCornerToEdge(Vector3 hitSpot, Transform hitCube, float wireSize)
+    public static Vector3 FindFirstCornerPassed(Vector3 lineEnd, Vector3 lineStart, bool ccwSwing, Transform hitCube, float wireSize)
     {
-
         float height;
         float width;
         List<Vector3> corners = RopeControl2.defineCube();
-
 
         height = hitCube.localScale.y;
         width = hitCube.localScale.x;
@@ -89,7 +92,44 @@ public class RopeControl2 : MonoBehaviour {
         width = width + wireSize;
         height = height + wireSize;
 
+        int sign = ccwSwing ? 1 : -1;
 
+        // Sort the list in place by the distance to find the most negative angle
+        // Set Vector3 n argument to Vector3.forward to have ccw as positive
+        corners = corners.OrderBy(vec3 => sign * AngleSigned(lineStart - lineEnd, lineStart - hitCube.TransformPoint(vec3), Vector3.forward)).ToList();
+
+        // To be removed:
+        //int i = 0;
+        //foreach (Vector3 c in corners)
+        //{
+        //    Debug.Log("Corner[" + i.ToString() + "] is at " + (sign * AngleSigned(lineStart - lineEnd, lineStart - hitCube.TransformPoint(c), Vector3.forward)).ToString());
+        //    i++;
+        //}
+
+        // move away by wireSize
+        Vector3 diagDir = Vector3.Normalize(new Vector3(corners[0].x, 0f, 0f)) + Vector3.Normalize(new Vector3(0f, corners[0].y, 0f));
+
+        Vector3.Normalize(diagDir);
+
+        return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f));
+
+    }
+
+    //Given a point in world space and an object, get the closest vertex of that object, then find a point wireSize away from that.
+    //Assumes Object is a cube
+    public static Vector3 FindClosestCornerToEdge(Vector3 hitSpot, Transform hitCube, float wireSize)
+    {
+        float height;
+        float width;
+        List<Vector3> corners = RopeControl2.defineCube();
+
+        height = hitCube.localScale.y;
+        width = hitCube.localScale.x;
+
+        width = width + wireSize;
+        height = height + wireSize;
+
+        // Sort the list in place by the distance from the hitpoint
         corners = corners.OrderBy(vec3 => Vector3.Distance(vec3, hitCube.InverseTransformPoint(hitSpot))).ToList();
 
         // move away by wireSize
@@ -100,11 +140,10 @@ public class RopeControl2 : MonoBehaviour {
         return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f));
 
     }
-    
+
     //variant for autoaim
     public static Vector3 FindClosestCornerToLine(Vector3 lineStart, Vector3 lineEnd, Transform hitCube, float wireSize)
     {
-
 
         float height;
         float width;
@@ -127,10 +166,8 @@ public class RopeControl2 : MonoBehaviour {
 
         return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f));
 
-
     }
 
-    
     //did we hit something?
     public Vector3? HitTest(Camera camera, int mask, Vector3 origin, bool autoAim)
     {
@@ -165,7 +202,7 @@ public class RopeControl2 : MonoBehaviour {
             }
 
             GlobalStuff.setLastColor(hit.transform.GetComponent<Renderer>().material.color, player);
-                       
+
 
             return anchorPoint;
 
@@ -217,7 +254,7 @@ public class RopeControl2 : MonoBehaviour {
                 cornerlist = cornerlist.OrderBy(vec3 => pointToLineDistance(origin, mousePos, vec3)).ToList();
 
                 if (cornerlist.Count > 0)
-                { 
+                {
                     anchorPoint = cornerlist[0];
                 }
 
@@ -225,7 +262,7 @@ public class RopeControl2 : MonoBehaviour {
 
                 return anchorPoint;
             }
-                        
+
         }
 
         return anchorPoint;
@@ -236,40 +273,50 @@ public class RopeControl2 : MonoBehaviour {
     {
         Vector3? anchorPoint = HitTest(mainCamera, hitMask, player.transform.position, autoAimOn);
 
-        
+
         if (anchorPoint != null)
         {
-            Ropes.Add(new Rope(player, ropeBend, (Vector3)anchorPoint, player.transform.position, spring, damper,ropeColor,ropeWidth,lineContainer));
+            Ropes.Add(new Rope(player, ropeBend, (Vector3)anchorPoint, player.transform.position, spring, damper, ropeColor, ropeWidth, lineContainer));
         }
     }
 
 
     void FixedUpdate()
     {
-      
         foreach (Rope r in Ropes)
         {
-            if (r.isRetracted())
+
+
+            // Test if velocity is greater than 0 (normalized vector should be one or zero)
+            // Do nothing if there is no motion
+            // Could replace with velocity != Vector3.zero?
+            if (r.RopeCount() > 1 && GetComponent<Rigidbody>().velocity.magnitude > 0.5)
             {
-                r.RopeJoin();
-                continue;
-            }
-            if (r.isStraight())
-            {
-                r.RopeJoin();
-                continue;
+                /* Test whether to wrap or unwrap around world objects */
+
+                // Should only unwrap if swinging in the opposite direction to when the split was made
+                if (r.isStraight() && r.LastSegment().isAntiClockwise != r.ccwSwing()) // || r.isRetracted())
+                {
+                    r.RopeJoin();
+                }
+                // DISABLED since it can create a joined rope through an object
+                //else if (r.isRetracted())
+                //{
+                //    r.RopeJoin();
+                //}
             }
 
+            // Test if the last rope is going through a world object
             Vector3? ropeCol = r.isSplit(splitMask);
             if (ropeCol != null)
             {
                 r.RopeSplit((Vector3)ropeCol);
-                continue;
             }
-            
-        }
 
-        
+            // Store the current swing direction
+            r.lastCcwSwing = r.ccwSwing();
+
+        }
     }
 
     void LateUpdate()
@@ -284,9 +331,9 @@ public class RopeControl2 : MonoBehaviour {
     void Update()
     {
         // Handle control actions
-        if ((Input.GetButtonDown("Attach + Pull")) == true && !GlobalStuff.Paused && !GlobalStuff.isDead)
+        if ((Input.GetButtonDown("Attach + Pull")) && !GlobalStuff.Paused && !GlobalStuff.isDead)
         {
-            
+
 
             // Add a new rope
             if (Ropes.Count < maxRopes)
@@ -296,7 +343,7 @@ public class RopeControl2 : MonoBehaviour {
         }
 
         // Retract Rope
-        if (Input.GetButton("Attach + Pull") && Ropes.Count > 0 == true && !GlobalStuff.Paused && !GlobalStuff.isDead)
+        if (Input.GetButton("Attach + Pull") && Ropes.Count > 0 && !GlobalStuff.Paused && !GlobalStuff.isDead)
         {
             //Retract the first rope
             Ropes[Ropes.Count - 1].Retract(retractSpeed * Time.deltaTime);
@@ -305,12 +352,16 @@ public class RopeControl2 : MonoBehaviour {
         // Detach - destroy all ropes
         if (Input.GetButtonDown("Dettach") && !GlobalStuff.Paused && !GlobalStuff.isDead && Ropes.Count > 0)
         {
-           
-                this.Ropes[Ropes.Count - 1].Destroy();
-                Destroy(this.Ropes[Ropes.Count - 1]);
-                this.Ropes.RemoveAt(Ropes.Count - 1);
-            
-          
+
+            this.Ropes[Ropes.Count - 1].Destroy();
+            Destroy(this.Ropes[Ropes.Count - 1]);
+            this.Ropes.RemoveAt(Ropes.Count - 1);
+
+
+        }
+        if (Input.GetButton("Zip") && !GlobalStuff.Paused && !GlobalStuff.isDead)
+        {
+            GetComponent<Rigidbody>().velocity *= 1.05f;
         }
     }
 
@@ -332,12 +383,13 @@ public class RopeSegment : Object
     // Stored Length
     public float length;
 
+
     // Spin direction on init, needed for wrap/unwrap checks
+    // Null indicates no direction
     public bool isAntiClockwise;
-       
-    
+
     // RopeSegment constructor
-    public RopeSegment(GameObject bend, Vector3 anchor, Vector3 end,  Color ropeColor, float width, float length,GameObject lineParent)
+    public RopeSegment(GameObject bend, Vector3 anchor, Vector3 end, Color ropeColor, float width, float length, GameObject lineParent)
     {
         this.bend = (GameObject)Instantiate(bend);
         this.bend.transform.parent = lineParent.transform;
@@ -359,7 +411,7 @@ public class RopeSegment : Object
         this.lineRenderer.SetVertexCount(2);
         this.lineRenderer.material.color = ropeColor;
         this.lineRenderer.material.shader = Shader.Find("Self-Illumin/Diffuse");
-        
+
     }
 
     // Draw the rope segment
@@ -380,7 +432,7 @@ public class RopeSegment : Object
 
     public Vector3 Direction()
     {
-        return (this.anchor - this.end);
+        return Vector3.Normalize(this.anchor - this.end);
     }
 
 
@@ -388,7 +440,7 @@ public class RopeSegment : Object
 
 public class Rope : Object
 {
-    
+
     /* GameObjects */
 
     // The game object to be used to smooth rope ends
@@ -403,27 +455,27 @@ public class Rope : Object
     // Store spring constants
     public float spring;
     public float damper;
+    public float minRopeLength = 0.25f;
 
     // A container to track rope segments
     private Stack<RopeSegment> RopeSegments;
 
-    private Vector3 anchorPoint;
-
+    // Store movement info for joining calcs
     private float lastAngle;
     private float currentAngle;
     private float deltaAngle;
 
-    
+    // Store the swing direction from the last physics tick.
+    // This is probably not necessary but might prevent some race conditions?
+    public bool? lastCcwSwing;
 
     // Physics controls
     public ConfigurableJoint ropeJoint;
     private SoftJointLimit ropeLimit;
 
-   
-    
 
     // Rope constructor
-    public Rope(GameObject player, GameObject bend, Vector3 anchor, Vector3 end, float spring, float damper,Color color, float width,  GameObject lineContainer)
+    public Rope(GameObject player, GameObject bend, Vector3 anchor, Vector3 end, float spring, float damper, Color color, float width, GameObject lineContainer)
     {
         this.player = player;
         this.bend = bend;
@@ -431,11 +483,11 @@ public class Rope : Object
         this.damper = damper;
         this.color = color;
         this.width = width;
-        this.lineContainer = lineContainer;      
+        this.lineContainer = lineContainer;
 
         // Create the initial rope segment
         this.RopeSegments = new Stack<RopeSegment>();
-        this.RopeSegments.Push(new RopeSegment(this.bend, anchor, end, this.color, this.width, Vector3.Distance(anchor, end),lineContainer));
+        this.RopeSegments.Push(new RopeSegment(this.bend, anchor, end, this.color, this.width, Vector3.Distance(anchor, end), lineContainer));
 
         // Configure the rope physics
         this.ropeJoint = player.AddComponent<ConfigurableJoint>();
@@ -448,31 +500,54 @@ public class Rope : Object
         this.ropeJoint.xMotion = ConfigurableJointMotion.Limited;
         this.ropeJoint.yMotion = ConfigurableJointMotion.Limited;
         this.ropeJoint.zMotion = ConfigurableJointMotion.Limited;
-        this.ropeLimit.limit = Vector3.Distance(anchor, end);
-        this.ropeJoint.linearLimit = this.ropeLimit;
         this.ropeLimit.spring = spring;
         this.ropeLimit.damper = damper;
-        this.ropeLimit.spring = spring;
-
-        
+        this.ropeLimit.limit = Vector3.Distance(anchor, end);
+        this.ropeJoint.linearLimit = this.ropeLimit;
     }
 
     // Reduce the length of the rope segment by a certain amount
     public void Retract(float amount)
     {
-        this.ropeLimit.limit -= amount;
-        this.ropeJoint.linearLimit = this.ropeLimit;
-        this.LastSegment().length -= amount;
-        if (RopeSegments.Count > 1)
+        if (this.ropeLimit.limit - amount >= minRopeLength)
         {
-            this.RopeSegments.ElementAt(1).length -= amount;
+            this.ropeLimit.limit -= amount;
+            this.ropeJoint.linearLimit = this.ropeLimit;
+            this.LastSegment().length -= amount;
+
+            if (this.RopeSegments.Count > 1)
+            {
+                this.RopeSegments.ElementAt(1).length -= amount;
+            }
         }
-       
+    }
+
+    public int RopeCount()
+    {
+        return this.RopeSegments.Count;
     }
 
     public RopeSegment LastSegment()
     {
         return this.RopeSegments.Peek();
+    }
+
+    // Find out whether the swing direction is counter clockwise
+    public bool ccwSwing()
+    {
+        /* Get the current direction of rotation around the top-of-stack anchor */
+
+        // Unit vector of player velocity
+        Vector3 velocity = player.GetComponent<Rigidbody>().velocity;
+        velocity.Normalize();   // Convert to a unit vector
+
+        // Unit vector of the last rope segment
+        Vector3 line = this.LastSegment().anchor - player.transform.position;
+        line.Normalize();
+
+        // Check the sign of the angle between the current and next (projected) frame
+        // to find swing direction. A zero angle does not need to be considered.
+        return (Vector3.Cross(line, line + velocity).z < 0);
     }
 
     // Update angle records and visuals
@@ -489,9 +564,9 @@ public class Rope : Object
             this.deltaAngle = this.currentAngle - this.lastAngle;
             this.lastAngle = this.currentAngle;
         }
-        foreach (RopeSegment rs in RopeSegments)
+        foreach (RopeSegment segment in RopeSegments)
         {
-            rs.DrawLine();
+            segment.DrawLine();
         }
     }
 
@@ -501,44 +576,48 @@ public class Rope : Object
         // The 'anchor' of the existing rope segment is left untouched since this is 
         // where the bend object is
 
+        // Find out how much rope is being lost
+        float cut = Vector3.Distance(splitPoint, this.LastSegment().anchor);
 
         //set the length of the new segment to the length of the old rope minus the part that was split
         float newDistance = this.LastSegment().length - (Vector3.Distance(this.LastSegment().anchor, splitPoint));
 
         // Adjust the end location of the colliding rope segment to the split point
         this.LastSegment().end = splitPoint;
-                
+
 
         // Create a new rope segment from the player to the split point
-        this.RopeSegments.Push(new RopeSegment(this.bend, splitPoint, this.player.transform.position, this.color, this.width,newDistance,this.lineContainer));
+        this.RopeSegments.Push(new RopeSegment(this.bend, splitPoint, this.player.transform.position, this.color, this.width, newDistance, this.lineContainer));
 
         // Adjust the spring (ConfigurableJoint) to reflect the anchor of the most
         // recently added RopeSegment
-        this.RefreshJoint();
+        this.RefreshJoint(-cut);
 
         // Record the initial swing direction
-        this.LastSegment().isAntiClockwise = deltaAngle > 0f;
+        this.LastSegment().isAntiClockwise = this.lastCcwSwing ?? this.ccwSwing(); //deltaAngle > 0f;
     }
 
     // Merges two ropes when unwrapping from an object
     public void RopeJoin()
     {
-                
+        // Store the current split (anchor) point
+        Vector3 currentAnchor = this.LastSegment().anchor;
+
         // Destroy and derefence the most recently added RopeSegment from the list
-        
         this.RopeSegments.Pop().Destroy();
+
+        // Find out how much rope will be added to the last segment
+        float paste = Vector3.Distance(this.LastSegment().anchor, currentAnchor);
 
         // Extend the new top-of stack RopeSegment to catch the player
         this.LastSegment().end = this.player.transform.position;
-                
-        // Refresh the spring joint
-        this.RefreshJoint();
 
-        
+        // Refresh the spring joint
+        this.RefreshJoint(paste);
     }
 
-    
-    public void RefreshJoint()
+
+    public void RefreshJoint(float deltaLimit)
     {
         // Kill the existing spring joint
         Destroy(this.ropeJoint);
@@ -554,11 +633,10 @@ public class Rope : Object
         this.ropeJoint.xMotion = ConfigurableJointMotion.Limited;
         this.ropeJoint.yMotion = ConfigurableJointMotion.Limited;
         this.ropeJoint.zMotion = ConfigurableJointMotion.Limited;
-        this.ropeLimit.limit = this.LastSegment().length;
-        this.ropeJoint.linearLimit = this.ropeLimit;
         this.ropeLimit.spring = spring;
         this.ropeLimit.damper = damper;
-        this.ropeLimit.spring = spring;
+        this.ropeLimit.limit += deltaLimit;                     // Alter the limit by the length of rope added or removed
+        this.ropeJoint.linearLimit = this.ropeLimit;
     }
 
     // Have we retracted very close to the anchor point?
@@ -571,12 +649,10 @@ public class Rope : Object
     public bool isStraight()
     {
         float distance = Vector3.Distance(this.LastSegment().anchor, player.transform.position);
-        if ((this.RopeSegments.Count > 1) && (distance > 0.3f))
+        if ((this.RopeSegments.Count > 1)) // && (distance > 0.3f))
         {
-            float angle = RopeControl2.AngleSigned(this.RopeSegments.ElementAt(1).end - this.RopeSegments.ElementAt(1).anchor,
+            float angle = RopeControl.AngleSigned(this.RopeSegments.ElementAt(1).end - this.RopeSegments.ElementAt(1).anchor,
                 this.LastSegment().anchor - player.transform.position, Vector3.back);
-
-          
 
             return ((angle < 0f && this.LastSegment().isAntiClockwise)
                 || (angle > 0f && !this.LastSegment().isAntiClockwise));
@@ -587,29 +663,28 @@ public class Rope : Object
     //Should we split the rope?
     public Vector3? isSplit(int mask)
     {
-
         RaycastHit hit;
         Vector3 direction;
         float distance;
-
 
         //Look for Splits
         direction = this.LastSegment().anchor - player.transform.position;
         direction.Normalize();
         Ray lookSplit = new Ray(player.transform.position, direction);
-        
+
         distance = Vector3.Distance(player.transform.position, this.LastSegment().anchor) - 0.25f;
         if (distance > 0f)
         {
-            
+
             if (Physics.Raycast(lookSplit, out hit, distance, mask))
             {
-                return RopeControl2.FindClosestCornerToEdge(hit.point, hit.transform, this.width);
+                return RopeControl2.FindFirstCornerPassed(this.player.transform.position, this.LastSegment().anchor, this.lastCcwSwing ?? this.ccwSwing(), hit.transform, this.width);
+                //return RopeControl2.FindClosestCornerToEdge(hit.point, hit.transform, this.width);
             }
         }
         return null;
     }
-    
+
 
     public void Destroy()
     {
@@ -617,9 +692,7 @@ public class Rope : Object
         {
             rs.Destroy();
         }
-        
         Destroy(this.ropeJoint);
-        
         Destroy(this);
     }
 }
