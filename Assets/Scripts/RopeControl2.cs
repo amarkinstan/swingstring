@@ -18,13 +18,13 @@ public class RopeControl2 : MonoBehaviour
     /* Rope configuration */
     public Color ropeColor;                 // Rope colour
     public float ropeWidth = 0.5f;          // Size of Rope in game
-    public float maxRopeLength = 72f;       // Max attach distance
-    public float retractSpeed = 2f;         // Retract speed
+    public float maxRopeLength = 49f;       // Max attach distance
+    public float retractSpeed = 3f;         // Retract speed
     public float spring = 50f;              // Spring constant
     public float damper = 0.2f;             // Damper constant
 
     /* Game Settings */
-    public int maxRopes = 8;                // Set the max number of ropes to be generated at once
+    public int maxRopes = 3;                // Set the max number of ropes to be generated at once
     public bool autoAimOn = true;             //autoaim on
 
     #endregion Public Variables
@@ -359,10 +359,10 @@ public class RopeControl2 : MonoBehaviour
 
 
         }
-        if (Input.GetButton("Zip") && !GlobalStuff.Paused && !GlobalStuff.isDead)
-        {
-            GetComponent<Rigidbody>().velocity *= 1.05f;
-        }
+        //if (Input.GetButton("Zip") && !GlobalStuff.Paused && !GlobalStuff.isDead)
+        //{
+        //    GetComponent<Rigidbody>().velocity *= 1.05f;
+        //}
     }
 
 }
@@ -648,7 +648,7 @@ public class Rope : Object
     // Do we need to join the ropes? (Unwrap around object)
     public bool isStraight()
     {
-        float distance = Vector3.Distance(this.LastSegment().anchor, player.transform.position);
+       
         if ((this.RopeSegments.Count > 1)) // && (distance > 0.3f))
         {
             float angle = RopeControl.AngleSigned(this.RopeSegments.ElementAt(1).end - this.RopeSegments.ElementAt(1).anchor,

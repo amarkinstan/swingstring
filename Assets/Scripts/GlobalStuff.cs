@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
+using System.IO;
 
 
 //Used to hold all the global variables and behaviours in a scene
@@ -95,7 +97,17 @@ public class GlobalStuff : MonoBehaviour
         return result;
     }
 
+    public static T DeepClone<T>(T a)
+    {
+        using (var ms = new MemoryStream())
+        {
+            XmlSerializer xs = new XmlSerializer(typeof(T));
+            xs.Serialize(ms, a);
+            ms.Position = 0;
 
+            return (T)xs.Deserialize(ms);
+        }
+    }
 
 
     // Use this for initialization
