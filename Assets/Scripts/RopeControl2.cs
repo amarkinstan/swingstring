@@ -98,18 +98,9 @@ public class RopeControl2 : MonoBehaviour
         // Set Vector3 n argument to Vector3.forward to have ccw as positive
         corners = corners.OrderBy(vec3 => sign * AngleSigned(lineStart - lineEnd, lineStart - hitCube.TransformPoint(vec3), Vector3.forward)).ToList();
 
-        // To be removed:
-        //int i = 0;
-        //foreach (Vector3 c in corners)
-        //{
-        //    Debug.Log("Corner[" + i.ToString() + "] is at " + (sign * AngleSigned(lineStart - lineEnd, lineStart - hitCube.TransformPoint(c), Vector3.forward)).ToString());
-        //    i++;
-        //}
-
+        
         // move away by wireSize
-        Vector3 diagDir = Vector3.Normalize(new Vector3(corners[0].x, 0f, 0f)) + Vector3.Normalize(new Vector3(0f, corners[0].y, 0f));
-
-        Vector3.Normalize(diagDir);
+        Vector3 diagDir = corners[0].normalized;
 
         return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f));
 
@@ -117,28 +108,26 @@ public class RopeControl2 : MonoBehaviour
 
     //Given a point in world space and an object, get the closest vertex of that object, then find a point wireSize away from that.
     //Assumes Object is a cube
-    public static Vector3 FindClosestCornerToEdge(Vector3 hitSpot, Transform hitCube, float wireSize)
+    public static Vector3 FindClosestCornerToEdge(Vector3 hitSpot, Transform hitShape, float wireSize, List<Vector3> corners)
     {
         float height;
         float width;
-        List<Vector3> corners = RopeControl2.defineCube();
+        //List<Vector3> corners = RopeControl2.defineCube();
 
-        height = hitCube.localScale.y;
-        width = hitCube.localScale.x;
+        height = hitShape.localScale.y;
+        width = hitShape.localScale.x;
 
         width = width + wireSize;
         height = height + wireSize;
 
         // Sort the list in place by the distance from the hitpoint
-        corners = corners.OrderBy(vec3 => Vector3.Distance(vec3, hitCube.InverseTransformPoint(hitSpot))).ToList();
+        corners = corners.OrderBy(vec3 => Vector3.Distance(vec3, hitShape.InverseTransformPoint(hitSpot))).ToList();
 
         // move away by wireSize
-        Vector3 diagDir = Vector3.Normalize(new Vector3(corners[0].x, 0f, 0f)) + Vector3.Normalize(new Vector3(0f, corners[0].y, 0f));
-
-        Vector3.Normalize(diagDir);
-
-        return hitCube.TransformPoint(corners[0]) + (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f));
-
+        Vector3 diagDir = corners[0].normalized;
+                
+        return hitShape.TransformPoint(corners[0]) + (Vector3.Normalize(hitShape.TransformDirection(diagDir)) * (wireSize / 2f));
+        //return hitCube.TransformPoint(corners[0]) /*+ (Vector3.Normalize(hitCube.TransformDirection(diagDir)) * (wireSize / 2f))*/;
     }
 
     //variant for autoaim
@@ -345,8 +334,16 @@ public class RopeControl2 : MonoBehaviour
         // Retract Rope
         if (Input.GetButton("Attach + Pull") && Ropes.Count > 0 && !GlobalStuff.Paused && !GlobalStuff.isDead)
         {
-            //Retract the first rope
-            Ropes[Ropes.Count - 1].Retract(retractSpeed * Time.deltaTime);
+            if (Ropes.Count > 1)
+            {
+                Ropes[Ropes.Count - 1].Retract(retractSpeed * Time.deltaTime * 2f);
+
+            }
+            else
+            {
+                //Retract the first rope
+                Ropes[Ropes.Count - 1].Retract(retractSpeed * Time.deltaTime);
+            }
         }
 
         // Detach - destroy all ropes
@@ -678,6 +675,8 @@ public class Rope : Object
 
             if (Physics.Raycast(lookSplit, out hit, distance, mask))
             {
+                //var block  = (Block)hit.transform.gameObject.GetComponent("Block");
+                //return RopeControl2.FindClosestCornerToEdge(hit.point, hit.transform, this.width, block.outerPoints);
                 return RopeControl2.FindFirstCornerPassed(this.player.transform.position, this.LastSegment().anchor, this.lastCcwSwing ?? this.ccwSwing(), hit.transform, this.width);
                 //return RopeControl2.FindClosestCornerToEdge(hit.point, hit.transform, this.width);
             }

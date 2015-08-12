@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Block.cs" />
      <Compile Include="Assets\Scripts\BlockBounce.cs" />
      <Compile Include="Assets\Scripts\Boundary.cs" />
      <Compile Include="Assets\Scripts\CameraFollow.cs" />
@@ -54,6 +55,7 @@
      <Compile Include="Assets\Scripts\CreateChunk.cs" />
      <Compile Include="Assets\Scripts\Death.cs" />
      <Compile Include="Assets\Scripts\EventManager.cs" />
+     <Compile Include="Assets\Scripts\GenerateMesh.cs" />
      <Compile Include="Assets\Scripts\GlobalStore.cs" />
      <Compile Include="Assets\Scripts\GlobalStuff.cs" />
      <Compile Include="Assets\Scripts\Gravity.cs" />

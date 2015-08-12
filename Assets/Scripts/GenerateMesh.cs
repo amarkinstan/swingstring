@@ -4,35 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-public class GenerateMesh : MonoBehaviour {
+public static class GenerateMesh {
 
-    public int numVerts;
-    public float minVertDistance;
-    public float maxVertDistance;
-    public float maxLengthDelta;
-    public float minLengthDelta;
+ 
 
-	// Use this for initialization
-	void Start () {
-
-        //test code yo
-
-        List<Vector3> testList = MakeShape(Vector3.zero, numVerts, minVertDistance, maxVertDistance, maxLengthDelta, minLengthDelta);
-        Mesh testMesh = CreateMesh(testList, 2f);
-        gameObject.AddComponent("MeshRenderer");
-        gameObject.GetComponent<MeshRenderer>().material.color = Color.blue;
-        gameObject.AddComponent("MeshFilter");
-        gameObject.GetComponent<MeshFilter>().mesh = testMesh;
-
-       
-        
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     public static Vector3 AngleAndDistance(Vector3 origin, float length,float angle)
     {
@@ -257,8 +232,49 @@ public class GenerateMesh : MonoBehaviour {
 
         }
 
-      
 
+        public static List<Vector3> RemoveConcave(List<Vector3> shape, Vector3 origin)
+        {
+            List<Vector3> result = GlobalStuff.DeepClone<List<Vector3>>(shape);
+
+            float lowerPointDistance;
+
+            float pointDistance;
+
+            float higherPointDistance;
+
+            for (int i = 0; i < shape.Count; i++)
+            {
+                pointDistance = Vector3.Distance(origin, shape[i]);
+
+                if (i == 0)
+                {
+                    lowerPointDistance = Vector3.Distance(origin, shape[shape.Count - 1]);
+                }
+                else
+                {
+                    lowerPointDistance = Vector3.Distance(origin, shape[i - 1]);
+                }
+
+                if (i == shape.Count - 1)
+                {
+                    higherPointDistance = Vector3.Distance(origin, shape[0]);
+                }
+                else
+                {
+                    higherPointDistance = Vector3.Distance(origin, shape[i + 1]);
+                }
+
+                if (pointDistance < lowerPointDistance && pointDistance < higherPointDistance)
+                {
+                    result[i] = Vector3.zero;
+                }
+
+            }
+
+            return result.Where(ele => ele != Vector3.zero).ToList();
+            
+        }
        
 
 
